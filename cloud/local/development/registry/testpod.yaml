@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  namespace: registry-internal
+spec:
+  containers:
+    - name: test-image
+      image: gcr.io/kaniko-project/executor:debug
+      command: [ "sh", "-c" ]
+      args:
+        - |
+          sleep infinity 
+
+      ports:
+        - containerPort: 80

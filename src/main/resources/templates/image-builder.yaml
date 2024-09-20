@@ -1,0 +1,81 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kaniko
+  namespace: registry-internal
+spec:
+  template:
+    metadata:
+      name: kaniko-pod
+      labels:
+        app: image-builder
+        image: image-name
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: kaniko
+          image: gcr.io/kaniko-project/executor:debug
+          command: [ "sh", "-c" ]
+          args:
+            - |
+              echo -e "$DOCKERFILE" > Dockerfile
+              /kaniko/executor --dockerfile=Dockerfile --destination=10.96.101.236/$IMAGE:$TAG --insecure --build-arg "HASH=$HASH" --build-arg="REPO=$REPO"  --build-arg="JAR_PATH=$JAR_PATH"
+          env:
+            - name: HASH
+              value: "1"
+            - name: REPO
+              value: https://github.com/vrtexe/maven-test-app.git
+            - name: JAR_PATH
+              value: target/maven-test-app-1.0.0.jar
+            - name: DOCKERFILE
+              value: |
+                FROM alpine/git:2.45.2 as src
+
+                WORKDIR /data
+
+                ARG HASH
+                ARG REPO
+
+                ENV HASH=${HASH}
+                RUN git clone $REPO src
+
+                FROM maven:3.9.8-eclipse-temurin-21-alpine as builder
+
+                ARG JAR_PATH
+                ARG BASE_DIRECTORY="."
+
+                WORKDIR /data
+
+                COPY --from=src /data/src src
+
+                WORKDIR /data/src/$BASE_DIRECTORY
+
+                RUN mvn clean install
+                RUN mv $JAR_PATH /data/app.jar
+
+                FROM eclipse-temurin:21 as jrebuilder
+
+                WORKDIR build
+
+                RUN jlink \
+                     --add-modules ALL-MODULE-PATH \
+                     --strip-debug \
+                     --no-man-pages \
+                     --no-header-files \
+                     --output jre
+
+
+                FROM gcr.io/distroless/base-debian12
+
+                COPY --from=jrebuilder /build/jre jre
+                COPY --from=builder  /data/app.jar app.jar
+
+                ENV JAVA_HOME /jre
+                ENV PATH $JAVA_HOME/bin:$PATH
+
+                ENTRYPOINT [ "java" ]
+                CMD [ "-jar", "app.jar" ]
+            - name: IMAGE
+              value: test
+            - name: TAG
+              value: V1

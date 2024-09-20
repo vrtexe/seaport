@@ -1,0 +1,7 @@
+resources:
+  - namespace.yaml
+  - persistent-volume-claim.yaml
+  - secret.yaml
+  - service.yaml
+  - deploy.yaml
+  - webdav-service.yaml

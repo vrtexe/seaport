@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  title: ContainerImage
+  description: Container Image
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+  /image/filter:
+    get:
+
+components:
+  schemas:
+    Images:
+      $ref: '#/components/schemas/Option'
+    Option:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        image:
+          type: object
+          properties:
+            type:
+              $ref: '#/components/schemas/ImageType'
+            value:
+              type: string
+            args:
+              $ref: '#/components/schemas/ImageArgs'
+        option:
+          $ref: '#/components/schemas/OptionData'
+        options:
+          $ref: '#/components/schemas/Options'
+    OptionData:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Options:
+      type: array
+      items:
+        $ref: '#/components/schemas/Option'
+    ImageType:
+      type: string
+      enum:
+        - PATH
+        - CLASSPATH
+        - VALUE
+    ImageArgs:
+      type: array
+      items:
+        $ref: '#/components/schemas/ImageArg'
+    ImageArg:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string

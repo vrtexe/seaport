@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: webdav-deployment
+  namespace: webdav
+spec:
+  template:
+    metadata:
+      name: kaniko-pod
+      labels:
+        app: image-builder
+        image: image-name
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: kaniko
+          image: gcr.io/kaniko-project/executor:debug
+          command: [ "sh", "-c" ]
+          args:
+            - |
+              echo -e "$DOCKERFILE" > Dockerfile
+              /kaniko/executor --dockerfile=Dockerfile --destination=10.96.101.236/$IMAGE:$TAG --insecure
+          env:
+            - name: DOCKERFILE
+              value: |
+                FROM simple-webdav
+                
+                EXPOSE 80
+                
+                CMD ["sleep", "infinity"]
+            - name: IMAGE
+              value: test
+            - name: TAG
+              value: V1

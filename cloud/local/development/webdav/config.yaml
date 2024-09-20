@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webdav-config
+  namespace: webdav
+data:
+  prefix: /dav
+  scope: /data
+  auth: 'false'
+  modify: 'true'

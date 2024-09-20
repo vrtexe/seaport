@@ -1,0 +1,1 @@
+./gradlew bootRun --continuous --args='--spring.profiles.active=in-cluster' -xtest

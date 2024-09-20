@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  height: 100%;
+}
+
+* {
+  accent-color: theme('colors.blue.400');
+}
+
+@layer base {
+  button.primary {
+    @apply box-border rounded border border-blue-600 bg-blue-400 px-4 py-0.5 text-white shadow-md hover:opacity-90 active:opacity-100 active:brightness-90 disabled:opacity-40 disabled:hover:opacity-40 disabled:active:brightness-100;
+  }
+
+  button.secondary {
+    @apply box-border rounded border border-gray-600 bg-gray-400 px-4 py-0.5 text-white shadow-md hover:opacity-90 active:opacity-100 active:brightness-90 disabled:opacity-40 disabled:hover:opacity-40 disabled:active:brightness-100;
+  }
+
+  button.primary-circle {
+    @apply box-border aspect-square rounded-[50%] border border-blue-600 bg-blue-400 p-2  text-white shadow-md hover:opacity-90 active:opacity-100 active:brightness-90 disabled:opacity-40 disabled:hover:opacity-40 disabled:active:brightness-100;
+  }
+
+  a.primary-button {
+    @apply box-border cursor-pointer select-none rounded border border-blue-600 bg-blue-400 px-4 py-0.5 text-white shadow-md hover:opacity-90 active:opacity-100 active:brightness-90;
+  }
+}

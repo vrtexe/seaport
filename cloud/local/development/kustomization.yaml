@@ -1,0 +1,7 @@
+resources:
+  - rback
+  - storage
+  - webdav
+  - registry
+  - database
+  - app

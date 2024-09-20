@@ -1,0 +1,6 @@
+resources:
+  - persistent-volume-claim.yaml
+  - deploy.yaml
+  - ingress.yaml
+  - service.yaml
+  - webdav-service.yaml

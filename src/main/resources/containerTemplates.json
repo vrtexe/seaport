@@ -1,0 +1,147 @@
+{
+  "images": {
+    "option": {
+      "id": "language",
+      "name": "Language"
+    },
+    "options": [
+      {
+        "id": "java",
+        "name": "Java",
+        "option": {
+          "id": "version",
+          "name": "Version"
+        },
+        "options": [
+          {
+            "id": "21",
+            "name": "21",
+            "option": {
+              "id": "type",
+              "name": "Type"
+            },
+            "options": [
+              {
+                "id": "exe",
+                "name": "executable",
+                "option": {
+                  "id": "image",
+                  "name": "Image"
+                },
+                "options": [
+                  {
+                    "id": "default",
+                    "name": "Default",
+                    "args": [
+                      {
+                        "name": "≈",
+                        "type": "file",
+                        "description": "Jar file"
+                      },
+                      {
+                        "name": "JAVA_ARGS",
+                        "type": "string",
+                        "description": "Arguments passed to the java command"
+                      },
+                      {
+                        "name": "JAR_ARGS",
+                        "type": "string",
+                        "description": "Arguments passed to the application"
+                      }
+                    ],
+                    "type": "CLASSPATH",
+                    "image": "templates/exe/curl/Dockerfile"
+                  }
+                ]
+              },
+              {
+                "id": "git",
+                "name": "git",
+                "option": {
+                  "id": "build_tool",
+                  "name": "Build tool"
+                },
+                "options": [
+                  {
+                    "id": "maven",
+                    "name": "Maven",
+                    "args": [
+                      {
+                        "name": "URL",
+                        "type": "url",
+                        "description": "Url of the code repository (public)"
+                      },
+                      {
+                        "name": "JAR_PATH",
+                        "type": "string",
+                        "description": "Path to the jar file building the project"
+                      },
+                      {
+                        "name": "BUILD_DIRECTORY",
+                        "type": "string",
+                        "description": "The base project directory within the repository, default is the base directory of the project (optional)"
+                      },
+                      {
+                        "name": "BUILD_ARGS",
+                        "type": "string",
+                        "description": "Arguments passed to the maven command"
+                      },
+                      {
+                        "name": "JAVA_ARGS",
+                        "type": "string",
+                        "description": "Arguments passed to the java command"
+                      },
+                      {
+                        "name": "JAR_ARGS",
+                        "type": "string",
+                        "description": "Arguments passed to the application"
+                      }
+                    ],
+                    "image": "templates/java/git/maven/Dockerfile"
+                  },
+                  {
+                    "id": "gradle",
+                    "name": "Gradle",
+                    "args": [
+                      {
+                        "name": "URL",
+                        "type": "url",
+                        "description": "Url of the code repository (public)"
+                      },
+                      {
+                        "name": "JAR_PATH",
+                        "type": "string",
+                        "description": "Path to the jar file building the project"
+                      },
+                      {
+                        "name": "BUILD_DIRECTORY",
+                        "type": "string",
+                        "description": "The base project directory within the repository, default is the base directory of the project (optional)"
+                      },
+                      {
+                        "name": "BUILD_ARGS",
+                        "type": "string",
+                        "description": "Arguments passed to the gradle command"
+                      },
+                      {
+                        "name": "JAVA_ARGS",
+                        "type": "string",
+                        "description": "Arguments passed to the java command"
+                      },
+                      {
+                        "name": "JAR_ARGS",
+                        "type": "string",
+                        "description": "Arguments passed to the application"
+                      }
+                    ],
+                    "image": "templates/java/git/gradle/Dockerfile"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

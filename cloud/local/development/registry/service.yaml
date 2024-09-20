@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: registry-service
+  namespace: registry-internal
+spec:
+  clusterIP: 10.96.101.236
+  selector:
+    app: registry-app
+  ports:
+    - port: 80
+      targetPort: 5000

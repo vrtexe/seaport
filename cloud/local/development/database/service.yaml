@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: database-service
+spec:
+  selector:
+    app: database
+  ports:
+    # Default port used by the image
+    - port: 5432
+      targetPort: 5432

@@ -1,0 +1,16 @@
+server:
+  port: 8080
+
+
+spring:
+  application:
+    name: hosting
+  datasource:
+    url: jdbc:postgresql://localhost:5432/seaport
+    username: seaport
+    password: password
+
+  liquibase:
+    enabled: true
+#  profiles:
+#    active: local,external

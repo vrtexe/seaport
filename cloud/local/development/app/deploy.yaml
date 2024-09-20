@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: application-source-deployment
+  labels:
+    app: application-source
+spec:
+  selector:
+    matchLabels:
+      app: application-source
+  template:
+    metadata:
+      labels:
+        app: application-source
+    spec:
+      serviceAccountName: app-admin
+      containers:
+        - name: application-source
+          image: mcr.microsoft.com/devcontainers/java:21
+          command: [ "sh", "-c" ]
+          args:
+            - |
+              ./gradlew bootRun --continuous -xtest
+          #              sleep infinity
+          ports:
+            - containerPort: 8080
+          workingDir: "/var/src"
+          volumeMounts:
+            - mountPath: "/var/src"
+              name: source-volume
+      volumes:
+        - name: source-volume
+          persistentVolumeClaim:
+            claimName: source-volume-claim

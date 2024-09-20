@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: registry
+    app: registry-app
+  name: registry
+  namespace: registry-internal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: registry
+  template:
+    metadata:
+      labels:
+        run: registry
+        app: registry-app
+    spec:
+      containers:
+        - name: registry
+          image: registry:2
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: registry-data
+              mountPath: /var/lib/registry
+              subPath: storage
+      volumes:
+        - name: registry-data
+          persistentVolumeClaim:
+            claimName: registry-data-pvc

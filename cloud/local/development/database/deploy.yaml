@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database-deployment
+  labels:
+    app: database
+spec:
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+        - name: database-container
+          image: postgres:16.3-alpine3.20
+          ports:
+            - containerPort: 5433
+          env:
+            - name: PGDATA
+              value: '/var/lib/postgresql/data/pg'
+            - name: POSTGRES_USER
+              value: seaport
+            - name: POSTGRES_PASSWORD
+              value: password
+            - name: POSTGRES_DB
+              value: seaport_app
+#          volumeMounts:
+#            - mountPath: "/var/lib/postgresql/data"
+#              name: pg-data
+#              readOnly: false
+#      volumes:
+#        - name: pg-data
+#          persistentVolumeClaim:
+#            claimName: database-data-claim

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<form>
+    <input id="file" type="file">
+</form>
+<button id="file-upload-button">upload</button>
+
+<button id="img-git">build image git</button>
+</body>
+
+<script defer>
+    document.querySelector("#file-upload-button").addEventListener("click", () => {
+        /** @type {HTMLInputElement} */
+        const fileInput = document.querySelector("#file");
+        const body = new FormData();
+        const image1 = crypto.randomUUID()
+        body.append("files", fileInput.files[0], image1)
+        // body.append("files", fileInput.files[0], crypto.randomUUID())
+
+
+        // body.append("imageParams", "EXE")
+        // body.append("version", "21")
+        // body.append("language", "java")
+        const ns = "test-me-ns"
+        const dep1 = "test-me-sv1"
+
+        body.append("body", `{
+            "name": "test-me-app",
+            "namespace": "${ns}",
+            "deployments": [
+                {
+                    "port": "8080",
+                    "name": "${dep1}",
+                    "image": "${image1}",
+                    "service": {
+                        "port": "80"
+                    },
+                    "ingress": {
+                        "path": "${ns}/${dep1}"
+                    },
+                    "environment": {
+                        "values": {
+                            "PORT": "8080"
+                        }
+                    }
+                }
+            ]
+        }`.toString())
+
+        body.append("request", `{
+            "namespace": "${ns}",
+            "images": {
+                "${image1}": {
+                    "uid": "${image1}",
+                    "data": {
+                        "name": "${dep1}",
+                        "version": "1.0.0"
+                    },
+                    "base": {
+                        "language": "java",
+                        "version": "21",
+                        "buildArgs": {
+                            "TEST": "1"
+                        }
+                    }
+                }
+            }
+        }`.toString());
+        // body.append("HASH", "here")
+
+        // const queryParams = new URLSearchParams({
+        //     "HASH": "test",
+        // "JAR_ARGS": "-DSomething.other"
+        // })
+
+
+        // console.log(`http://localhost:8080/test-image-build`)
+        // console.log(`http://localhost:8080/test2?${queryParams.toString()}`)
+        // fetch(`http://localhost:8080/test-image-build`, {
+        //     method: "POST",
+        //     body: body
+        // })
+
+        fetch(`http://localhost:8080/image/exe/create`, {
+            method: "POST",
+            body: body
+        })
+    })
+
+    document.querySelector("#img-git").addEventListener("click", () => {
+        fetch(`http://localhost:8080/test3`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                base: {
+                    language: "java",
+                    version: 21,
+                },
+                buildTool: "maven",
+                version: "3.9",
+                buildArgs: {
+                    HASH: "test",
+                    JAR_ARGS: "-DSomething.other"
+                }
+            }),
+        })
+    })
+</script>
+</html>

@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: "db/migrations/1.0_initial_schema.sql"
+  - include:
+      file: "db/migrations/1.1_base_image_schema.sql"
+  - include:
+      file: "db/migrations/1.2_base_image_data.sql"

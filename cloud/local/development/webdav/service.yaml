@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: webdav-service
+  namespace: webdav
+spec:
+  selector:
+    app: webdav-server
+  ports:
+    - port: 80
+      targetPort: 8080

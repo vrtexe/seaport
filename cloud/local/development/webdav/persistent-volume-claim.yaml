@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: webdav-data-pvc
+  namespace: webdav
+spec:
+  storageClassName: manual
+  volumeName: webdav-data-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi

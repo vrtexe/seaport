@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kaniko
+  namespace: registry-internal
+spec:
+  template:
+    metadata:
+      name: kaniko-pod
+      labels:
+        app: image-builder
+        image: image-name
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: load-container-file
+          image: busybox:1.36.1-musl
+          command: [ "sh", "-c", "echo -e $CONTAINER_FILE > /workdir/ContainerFile" ]
+          volumeMounts:
+            - name: workdir
+              mountPath: /workdir
+          env:
+            - name: CONTAINER_FILE
+              value: 'FROM nginx:latest\nEXPOSE 80\nEXPOSE 443\nCMD ["sleep", "infinity"]'
+      containers:
+        - name: kaniko
+          image: gcr.io/kaniko-project/executor
+          args:
+            - "--dockerfile=/workdir/ContainerFile"
+            - "--destination=10.96.101.236/test:v1"
+            - "--insecure"
+          volumeMounts:
+            - name: workdir
+              mountPath: /workdir
+      volumes:
+        - name: workdir
+          emptyDir: { }

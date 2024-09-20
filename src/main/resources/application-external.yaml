@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/seaport_app
+    username: seaport
+    password: password
+
+app-host:
+  k8s:
+    config:
+      format: CLASSPATH
+      data: kubeconfig.yaml
+  webdav:
+    base-url: http://localhost/webdav/dav
+    k8s-url: http://webdav-service/dav

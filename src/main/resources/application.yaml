@@ -1,0 +1,47 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: hosting
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://database-service/seaport_app
+    username: seaport
+    password: password
+
+  liquibase:
+    enabled: true
+    
+    change-log: classpath:db/changelog/master.yaml
+  profiles:
+    active: cluster
+
+  servlet:
+    multipart:
+      max-file-size: 1GB
+      max-request-size: 1GB
+
+app-host:
+  k8s:
+    config:
+      format: CLASSPATH
+      data: kubeconfig.yaml
+  image-builder:
+    registry: 10.96.101.236
+    job-prefix: image-builder
+    pod-name: kaniko-pod
+    namespace: registry-internal
+    labels:
+      app:
+        name: app
+        value: image-builder
+      image:
+        name: image
+        value: EMPTY
+
+  webdav:
+    base-url: http://webdav-service/dav
+    k8s-url: http://webdav-service/dav
+

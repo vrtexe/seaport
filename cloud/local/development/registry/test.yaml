@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test
+spec:
+  containers:
+    - name: test-image
+      image: internal.io/nginx-test:1.0.0
+  restartPolicy: Never

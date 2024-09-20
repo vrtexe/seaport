@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webdav-deployment
+  namespace: webdav
+  labels:
+    app: webdav-server
+spec:
+  selector:
+    matchLabels:
+      app: webdav-server
+  template:
+    metadata:
+      labels:
+        app: webdav-server
+    spec:
+      containers:
+        - name: webdav-container
+          image: ghcr.io/vrtexe/webdav:v4.3.3
+          ports:
+            - containerPort: 8080
+          env:
+            - name: WD_PORT
+              value: '8080'
+            - name: WD_PREFIX
+              valueFrom:
+                configMapKeyRef:
+                  name: webdav-config
+                  key: prefix
+            - name: WD_SCOPE
+              valueFrom:
+                configMapKeyRef:
+                  name: webdav-config
+                  key: scope
+            - name: WD_AUTH
+              valueFrom:
+                configMapKeyRef:
+                  name: webdav-config
+                  key: auth
+            - name: WD_MODIFY
+              valueFrom:
+                configMapKeyRef:
+                  name: webdav-config
+                  key: modify
+          volumeMounts:
+            - name: webdav-data-volume
+              mountPath: "/data"
+      volumes:
+        - name: webdav-data-volume
+          persistentVolumeClaim:
+            claimName: webdav-data-pvc
