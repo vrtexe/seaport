@@ -68,7 +68,7 @@
     </SideBar>
   </div>
 
-  <div bind:this={pageContent} class="h-full w-full overflow-scroll px-10">
+  <div bind:this={pageContent} class="h-full flex-1 overflow-scroll px-10">
     <slot name="complete-content" {fields}>
       {#each fields as field}
         <AccordionSection bind:field>

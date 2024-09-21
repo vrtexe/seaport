@@ -45,8 +45,6 @@
     console.log('Disconnected');
   }
 
-  $: console.log(ws);
-  $: console.log('dd', out);
 </script>
 
 Exploring
