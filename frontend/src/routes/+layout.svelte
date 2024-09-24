@@ -14,7 +14,7 @@
   bind:clientHeight={headerHeight}
   class="sticky top-0 z-50 flex items-center gap-16 border-b-2 border-gray-300 bg-white shadow-md">
   <a href="/" class="flex gap-2 px-2 py-4">
-    <img alt="l" />
+    <!-- <img alt="l" /> -->
     <h1>Hosting</h1>
   </a>
 
@@ -25,22 +25,22 @@
           <span>Dashboard</span>
         </a>
       </li>
-      <li>
+      <!-- <li>
         <a class="inline-block px-2 py-4" href="/explore" class:active={$page.route?.id === '/explore'}>
           <span>Explore</span>
         </a>
-      </li>
-      <li>
+      </li> -->
+      <!-- <li>
         <a class="inline-block px-2 py-4" href="/docs" class:active={$page.route?.id === '/docs'}>
           <span>Documentation</span>
         </a>
-      </li>
+      </li> -->
     </ul>
   </nav>
 
   <div class="flex h-full flex-1 justify-end gap-4 px-8">
-    <button class="primary" type="button">Login</button>
-    <button class="primary" type="button">Register</button>
+    <!-- <button class="primary" type="button">Login</button> -->
+    <!-- <button class="primary" type="button">Register</button> -->
   </div>
 </header>
 

@@ -52,6 +52,7 @@ fun ServicePort.toDomain() = DomainServicePort(
 fun Deployment.toDomain() = DomainDeployment(
     id = this.id!!,
     name = this.name,
+    namespace = this.application.namespace.name,
     pods = this.pods.map { it.toDomain() }.toSet()
 )
 

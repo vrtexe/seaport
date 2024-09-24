@@ -1,5 +1,11 @@
 package mk.ukim.finki.dnick.hosting.image
 
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.web.multipart.MultipartFile
 
 data class ImageBaseParams(
@@ -43,6 +49,13 @@ data class ImageGitParams(
     override val buildArgs: Map<String, String> = mapOf(),
 ) : ImageParamsTyped(ImageParamsType.GIT)
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
+@JsonSubTypes(
+    value = [
+        JsonSubTypes.Type(value = ImageGitParams::class, name = ImageParamsType.GIT_NAME),
+        JsonSubTypes.Type(value = ImageExeParams::class, name = ImageParamsType.EXE_NAME)
+    ]
+)
 abstract class ImageParamsTyped(
     val type: ImageParamsType
 ) {
@@ -52,5 +65,10 @@ abstract class ImageParamsTyped(
 }
 
 enum class ImageParamsType {
-    GIT, EXE
+    GIT, EXE;
+
+    companion object {
+        const val GIT_NAME = "GIT"
+        const val EXE_NAME = "EXE"
+    }
 }

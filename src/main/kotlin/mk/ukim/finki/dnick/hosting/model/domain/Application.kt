@@ -38,10 +38,10 @@ data class ServiceDeployment(
     val port: Int
 )
 
-
 data class Deployment(
     val id: Int,
     val name: String,
+    val namespace: String,
     val pods: Set<Pod>
 )
 
@@ -67,6 +67,6 @@ data class Image(
     var version: String,
     val hash: UUID,
     val baseRef: Int,
-    val arguments: Map<String, String> = emptyMap(),
+    val arguments: Map<String, String>
 )
 

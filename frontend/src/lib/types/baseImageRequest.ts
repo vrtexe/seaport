@@ -67,5 +67,3 @@ export type IngressDto = {
 export type EnvironmentDto = {
   values: Record<string, string>;
 };
-
-

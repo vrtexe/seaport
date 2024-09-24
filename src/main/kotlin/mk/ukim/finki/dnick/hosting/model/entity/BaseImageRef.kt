@@ -1,15 +1,7 @@
 package mk.ukim.finki.dnick.hosting.model.entity
 
 import com.fasterxml.jackson.annotation.JsonManagedReference
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.OneToMany
-import jakarta.persistence.OneToOne
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "base_image_ref")
@@ -19,11 +11,9 @@ class BaseImageRef(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
 
-//    @Column(insertable=false, updatable=false)
     @OneToOne(mappedBy = "ref", optional = true)
     var baseImageExe: BaseImageExe?,
 
-//    @Column(insertable=false, updatable=false)
     @OneToOne(mappedBy = "ref", optional = true)
     var baseImageGit: BaseImageGit?,
 

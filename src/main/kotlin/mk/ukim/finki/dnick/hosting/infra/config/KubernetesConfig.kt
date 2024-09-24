@@ -1,5 +1,6 @@
 package mk.ukim.finki.dnick.hosting.infra.config
 
+import io.kubernetes.client.informer.SharedInformerFactory
 import io.kubernetes.client.openapi.ApiClient
 import io.kubernetes.client.openapi.apis.AppsV1Api
 import io.kubernetes.client.openapi.apis.BatchV1Api
@@ -23,8 +24,12 @@ class KubernetesConfig {
     fun batchV1Api(client: ApiClient) = BatchV1Api(client)
 
     @Bean
-    fun dynamicKubernetesApi(client: ApiClient) = DynamicKubernetesApi("","v1", "",client)
+    fun dynamicKubernetesApi(client: ApiClient) = DynamicKubernetesApi("", "v1", "", client)
 
     @Bean
     fun networkingV1Api(client: ApiClient) = NetworkingV1Api(client)
+
+    @Bean
+    fun informerFactory(client: ApiClient) = SharedInformerFactory(client)
+
 }

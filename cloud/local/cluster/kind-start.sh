@@ -9,7 +9,7 @@ kind create cluster --config $directory/cluster.yaml
 
 kind export kubeconfig -n $cluster_name
 
-$directory/kind-cluster-exec.sh $cluster_name 'echo "10.96.101.236 registry-service.internal-registry.svc.cluster.local" >> /etc/hosts'
+$directory/kind-cluster-exec.sh $cluster_name 'echo "10.96.101.236 registry-service.registry-internal.svc.cluster.local" >> /etc/hosts'
 $directory/kind-cluster-exec.sh $cluster_name 'echo "10.96.101.236 internal.io" >> /etc/hosts'
 $directory/load-registry-config.sh $cluster_name
 

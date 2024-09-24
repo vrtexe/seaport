@@ -1,18 +1,19 @@
 package mk.ukim.finki.dnick.hosting.service
 
 import mk.ukim.finki.dnick.hosting.controller.NamespaceController.CreateNamespaceRequest
-import mk.ukim.finki.dnick.hosting.image.ImageCache
 import mk.ukim.finki.dnick.hosting.image.ImageExeParams
 import mk.ukim.finki.dnick.hosting.image.ImageGitParams
 import mk.ukim.finki.dnick.hosting.image.ImageParamsTyped
 import mk.ukim.finki.dnick.hosting.model.entity.*
 import mk.ukim.finki.dnick.hosting.repository.*
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
 import mk.ukim.finki.dnick.hosting.model.domain.Application as DomainApplication
+import mk.ukim.finki.dnick.hosting.model.domain.Deployment as DomainDeployment
 import mk.ukim.finki.dnick.hosting.model.domain.Namespace as DomainNamespace
 import org.springframework.stereotype.Service as SpringService
 
@@ -29,14 +30,22 @@ class ApplicationPersistenceService(
     private val servicePortRepository: ServicePortRepository,
     private val ingressRepository: IngressRepository,
     private val ingressRuleRepository: IngressRuleRepository,
-    baseImageRepository: BaseImageRepository,
-    private val baseImageRefRepository: BaseImageRefRepository,
     private val baseImageExeRepository: BaseImageExeRepository,
     private val baseImageGitRepository: BaseImageGitRepository,
-    private val imageCache: ImageCache
 ) {
 
     private fun namespaceFromRequest(request: CreateNamespaceRequest) = Namespace(name = request.name)
+
+    @Transactional
+    fun getApplications(namespace: String): DomainNamespace {
+        return getNamespaceByName(namespace)
+    }
+
+    @Transactional(readOnly = true)
+    fun getDeployment(id: Int): DomainDeployment {
+        return deploymentRepository.findByIdOrNull(id)?.toDomain()
+            ?: throw ResponseStatusException(BAD_REQUEST, "Missing deployment")
+    }
 
     @Transactional
     fun createNamespace(request: CreateNamespaceRequest): DomainNamespace {
@@ -58,10 +67,16 @@ class ApplicationPersistenceService(
 
     @Transactional(readOnly = true)
     fun getNamespace(uid: String): DomainNamespace {
-        return namespaceRepository.findById(UUID.fromString(uid))
-            .orElseThrow { ResponseStatusException(NOT_FOUND, "Resource not found") }
-            .toDomain()
+        return namespaceRepository.findByIdOrNull(UUID.fromString(uid))?.toDomain()
+            ?: throw ResponseStatusException(NOT_FOUND, "Resource not found")
     }
+
+    @Transactional(readOnly = true)
+    fun getNamespaceByName(name: String): DomainNamespace {
+        return namespaceRepository.findByName(name)?.toDomain()
+            ?: throw ResponseStatusException(NOT_FOUND, "Resource not found")
+    }
+
 
     private fun createImageCache(images: Map<String, ImageParamsTyped>, namespace: Namespace): (uid: String) -> Image {
         val state = mutableMapOf<String, Image>()

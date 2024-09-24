@@ -38,6 +38,7 @@
   import { createApplication } from '$lib/service/applicationService';
   import { MessageType, wsConnectTest } from '$lib/service/websocketService';
   import { onDestroy } from 'svelte';
+  import Loader from '$lib/components/Loader.svelte';
 
   const DEFAULT_FIELD_NAME = 'Default';
 
@@ -224,9 +225,8 @@
       },
       images
     }).finally(() => {
-      console.log('Done');
-      // goHome();
       loading = false;
+      goHome();
     });
   }
 
@@ -234,11 +234,9 @@
   function handleSocketConnection(): WebSocket {
     return wsConnectTest(message => {
       if (message.type === MessageType.Identifier) {
-        // console.log(message.id);
         create(message.id);
       } else if (message.type === MessageType.String) {
         state = message.data;
-        // console.log('here', message.data);
       }
     });
   }
@@ -295,9 +293,12 @@
 
     <svelte:fragment slot="sidebar-end">
       {#if loading}
-         <div class="px-4 py-2 text-sm font-bold opacity-40">
-           {state}
-         </div>
+        <div class="px-4 py-2 text-sm font-bold opacity-40">
+          <span class="px-2 text-lg"><Loader /></span>
+          {#if state}
+            {state}
+          {/if}
+        </div>
       {/if}
       <div class="grid grid-cols-2 gap-4 px-4">
         <button class="primary" disabled={loading} type="submit">Save</button>

@@ -1,3 +1,4 @@
+import type { NamespaceDto } from '$lib/service/applicationServiceDto';
 import { ImageType } from '$lib/types/baseImage';
 import type {
   ApplicationRequest,
@@ -9,6 +10,7 @@ import type {
 
 const BASE_URL = 'http://localhost:8080/api/v1';
 const IMAGE_API = 'image';
+const APPLICATION_API = 'application';
 
 type TypedApplicationRequest = { type: ImageType } & ApplicationRequest;
 
@@ -19,6 +21,36 @@ export async function createApplication(socket: string, application: Application
   }
 
   return await Promise.all(promises);
+}
+
+export function startDeployment(id: number) {
+  fetch(`${BASE_URL}/${APPLICATION_API}/deployment/${id}/start`);
+}
+
+export async function updateDeployment(id: number, version: string) {
+  fetch(`${BASE_URL}/${APPLICATION_API}/deployment/${id}/update?version=${version}`);
+}
+
+export async function editDeployment(id: number, properties: Record<string, string>) {
+  fetch(`${BASE_URL}/${APPLICATION_API}/deployment/${id}/edit`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      properties: properties
+    })
+  });
+}
+
+export function stopDeployment(id: number) {
+  fetch(`${BASE_URL}/${APPLICATION_API}/deployment/${id}/stop`);
+}
+
+export async function getApplications(namespace: string) {
+  return (await fetch(`${BASE_URL}/${APPLICATION_API}?namespace=${namespace}`)
+    .then(res => res.json())
+    .catch(e => catchAndDefault(e, []))) as NamespaceDto;
 }
 
 function splitRequest(application: ApplicationRequest): TypedApplicationRequest[] {
@@ -85,6 +117,9 @@ export async function createSingleApplication(socket: string, application: Appli
   } else {
     return await fetch(`${BASE_URL}/${IMAGE_API}/git/create`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: `{
         "request": ${applicationRequestToJson(socket, application.request)},
         "images": {
@@ -195,4 +230,9 @@ function gitPropertiesToJson(image: Image) {
       "version": "${image.version}"
     `
     : '';
+}
+
+function catchAndDefault<T>(e: unknown, defaultValue: T): T {
+  console.error(e);
+  return defaultValue;
 }

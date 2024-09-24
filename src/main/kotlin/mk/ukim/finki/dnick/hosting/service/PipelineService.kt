@@ -1,16 +1,25 @@
 package mk.ukim.finki.dnick.hosting.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.kubernetes.client.openapi.apis.AppsV1Api
 import mk.ukim.finki.dnick.hosting.builder.cleanupK8sName
-import mk.ukim.finki.dnick.hosting.image.ImageData
-import mk.ukim.finki.dnick.hosting.image.ImageExeParams
-import mk.ukim.finki.dnick.hosting.image.ImageGitParams
-import mk.ukim.finki.dnick.hosting.image.ImageParamsTyped
+import mk.ukim.finki.dnick.hosting.controller.ApplicationController
+import mk.ukim.finki.dnick.hosting.image.*
+import mk.ukim.finki.dnick.hosting.model.domain.Deployment
+import mk.ukim.finki.dnick.hosting.model.entity.BaseImageType
+import mk.ukim.finki.dnick.hosting.model.entity.EnvironmentValue
+import mk.ukim.finki.dnick.hosting.model.entity.Image
+import mk.ukim.finki.dnick.hosting.repository.*
 import mk.ukim.finki.dnick.hosting.service.ApplicationDeploymentService.PodData
 import mk.ukim.finki.dnick.hosting.socket.SocketSessionCache
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
+import java.util.*
+
 
 private val log = KotlinLogging.logger {}
 
@@ -62,8 +71,101 @@ class PipelineService(
     private val imageBuilderService: ImageBuilderService,
     private val applicationDeploymentService: ApplicationDeploymentService,
     private val applicationPersistenceService: ApplicationPersistenceService,
-    private val socketSessionCache: SocketSessionCache
+    private val socketSessionCache: SocketSessionCache,
+    private val baseImageRefRepository: BaseImageRefRepository,
+    private val imageRepository: ImageRepository,
+    private val namespaceRepository: NamespaceRepository,
+    private val environmentRepository: EnvironmentRepository,
+    private val environmentValueRepository: EnvironmentValueRepository,
 ) {
+
+
+    data class DeploymentUpdateDto(
+        val version: String,
+        val file: MultipartFile?,
+    )
+
+    @Transactional
+    fun editDeploymentConfig(id: Int, dto: ApplicationController.EditDeploymentDto, deployment: Deployment) {
+        deployment.pods.forEach { pod ->
+            environmentRepository.findByIdOrNull(pod.environment.id)?.let {
+                environmentValueRepository.deleteAll(it.values)
+                it.values = mutableSetOf()
+                it
+            }?.let { env ->
+                dto.properties.map {
+                    EnvironmentValue(
+                        name = it.key,
+                        value = it.value,
+                        environment = env
+                    )
+                }
+            }?.also {
+                environmentValueRepository.saveAll(it)
+            }
+
+            applicationDeploymentService.editDeploymentConfig(
+                dto,
+                pod.name,
+                pod.environment.name,
+                deployment.name,
+                deployment.namespace
+            )
+        }
+    }
+
+
+    @Transactional
+    fun updateAndDeploy(deployment: Deployment, update: DeploymentUpdateDto) {
+        deployment.pods.forEach { pod ->
+            val imageData = ImageData(pod.image.name, update.version)
+            baseImageRefRepository.findByIdOrNull(pod.image.baseRef)?.let {
+                when (it.type) {
+                    BaseImageType.GIT -> it.baseImageGit?.let { i ->
+                        buildImage(
+                            ImageGitParams(
+                                namespace = deployment.namespace,
+                                buildTool = i.buildTool,
+                                version = i.version,
+                                base = ImageBaseParams(i.base.language, i.base.version),
+                                uid = UUID.randomUUID().toString(),
+                                data = imageData,
+                                buildArgs = pod.image.arguments
+                            )
+                        )
+                    }
+
+                    BaseImageType.EXE -> it.baseImageExe?.let { i ->
+                        buildImage(
+                            ImageExeParams(
+                                namespace = deployment.namespace,
+                                base = ImageBaseParams(i.base.language, i.base.version),
+                                uid = UUID.randomUUID().toString(),
+                                data = imageData,
+                                buildArgs = pod.image.arguments,
+                                file = update.file!!
+                            )
+                        )
+                    }
+                }
+                it
+            }?.also {
+                imageRepository.save(
+                    Image(
+                        name = imageData.name,
+                        version = imageData.version,
+                        hash = UUID.randomUUID(),
+                        namespace = namespaceRepository.findByName(deployment.namespace)
+                            ?: throw RuntimeException("Namespace not found"),
+                        base = it,
+                        arguments = pod.image.arguments
+                    )
+                )
+            }
+
+            applicationDeploymentService.patchImageVersion(pod.name, imageData, deployment.name, deployment.namespace)
+        }
+    }
 
     fun buildAndDeploy(uncleanedApplicationDto: ApplicationDto) {
         val applicationDto = uncleanedApplicationDto.cleanUp();

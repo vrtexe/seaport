@@ -59,7 +59,7 @@ fun buildDeploymentDomain(namespace: String, deployment: Deployment, environment
                             .containers(
                                 deployment.pods.map {
                                     V1Container()
-                                        .name("${deployment.name}-${it.name}-pod")
+                                        .name(it.name)
                                         .image("${INTERNAL_REGISTRY}/${it.image.name}:${it.image.version}")
                                         .ports(mutableListOf(V1ContainerPort().containerPort(it.port)))
                                         .env(
@@ -139,7 +139,7 @@ fun buildIngressDomain(namespace: String, data: Ingress) = V1Ingress()
                                     listOf(
                                         V1HTTPIngressPath()
                                             .pathType("Prefix")
-                                            .path("/${it.path}(/|\\$)(.*)")
+                                            .path("/${it.path}(/|$)(.*)")
                                             .backend(
                                                 V1IngressBackend()
                                                     .service(

@@ -36,6 +36,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.liquibase:liquibase-core")
     implementation("io.kubernetes:client-java:21.0.1")
+    implementation("io.kubernetes:client-java-extended:21.0.1")
     implementation("com.github.lookfirst:sardine:5.12")
     implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.8.2")
 

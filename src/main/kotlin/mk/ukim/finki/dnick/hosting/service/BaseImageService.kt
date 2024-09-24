@@ -1,10 +1,12 @@
 package mk.ukim.finki.dnick.hosting.service
 
 import mk.ukim.finki.dnick.hosting.model.domain.BaseImageArg
+import mk.ukim.finki.dnick.hosting.model.entity.BaseImageRef
 import mk.ukim.finki.dnick.hosting.model.entity.BaseImageType
 import mk.ukim.finki.dnick.hosting.model.entity.toDomain
 import mk.ukim.finki.dnick.hosting.repository.BaseImageExeRepository
 import mk.ukim.finki.dnick.hosting.repository.BaseImageGitRepository
+import mk.ukim.finki.dnick.hosting.repository.BaseImageRefRepository
 import mk.ukim.finki.dnick.hosting.repository.BaseImageRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,8 +15,14 @@ import org.springframework.transaction.annotation.Transactional
 class BaseImageService(
     private val baseImageRepository: BaseImageRepository,
     private val baseImageExeRepository: BaseImageExeRepository,
-    private val baseImageGitRepository: BaseImageGitRepository
+    private val baseImageGitRepository: BaseImageGitRepository,
+    private val baseImageRefRepository: BaseImageRefRepository
 ) {
+
+    @Transactional(readOnly = true)
+    fun findBaseImages(ids: Set<Int>): MutableList<BaseImageRef> {
+        return baseImageRefRepository.findAllById(ids)
+    }
 
     @Transactional(readOnly = true)
     fun findLanguages(): List<String> {
