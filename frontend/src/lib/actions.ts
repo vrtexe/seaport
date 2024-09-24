@@ -5,12 +5,13 @@ const IntoViewEvent = {
   ExitOutOfView: 'exitOutOfView'
 } as const;
 
-type ActionEvent<E> = CustomEvent & {
+type ActionEvent<E, D> = CustomEvent<D> & {
   currentTarget: (E & EventTarget) | null;
 };
-interface Attributes<T> {
-  'on:enterIntoView': (e: ActionEvent<T>) => unknown;
-  'on:exitOutOfView': (e: ActionEvent<T>) => unknown;
+
+interface Attributes<T, D> {
+  'on:enterIntoView': (e: ActionEvent<T, D>) => unknown;
+  'on:exitOutOfView': (e: ActionEvent<T, D>) => unknown;
 }
 
 interface Params {
@@ -23,7 +24,7 @@ interface Params {
 export function intoView<Node extends HTMLElement>(
   node: Node,
   params: Params = {}
-): ActionReturn<Params, Attributes<Node>> {
+): ActionReturn<Params, Attributes<Node, { x: number; y: number }>> {
   let observer: IntersectionObserver | undefined;
 
   const handleIntersect: IntersectionObserverCallback = ([entry]) => {
