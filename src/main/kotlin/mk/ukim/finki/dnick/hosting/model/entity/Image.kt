@@ -1,11 +1,8 @@
 package mk.ukim.finki.dnick.hosting.model.entity
 
-import io.hypersistence.utils.hibernate.type.basic.PostgreSQLHStoreType
 import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import org.hibernate.annotations.Type
-import java.util.*
 
 @Entity
 @Table(name = "image")

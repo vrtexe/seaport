@@ -69,7 +69,7 @@ class ImageService(
     fun editImage(id: Int, update: ImageUpdateRequest): Image {
         val image = getImage(id)
         if (image.name == update.name) {
-            return image;
+            return image
         }
 
         imageRepository.findBy(update.name, userProperties.namespace)?.let {
@@ -89,7 +89,7 @@ class ImageService(
     }
 
     fun buildImage(dto: ImageBuildRequestDto) {
-        val image = getImage(dto.imageId);
+        val image = getImage(dto.imageId)
         val socket = dto.socket?.let { socketSessionCache.get(it) }
 
         val tag = saveImage(dto.request, image)

@@ -65,7 +65,6 @@ fun ApplicationDto.cleanUp(): ApplicationDto {
 
 @Service
 class PipelineService(
-    private val imageBuilderService: ImageBuilderService,
     private val applicationDeploymentService: ApplicationDeploymentService,
     private val applicationPersistenceService: ApplicationPersistenceService,
     private val socketSessionCache: SocketSessionCache,
@@ -173,7 +172,7 @@ class PipelineService(
     }
 
     fun buildAndDeploy(uncleanedApplicationDto: ApplicationDto) {
-        val applicationDto = uncleanedApplicationDto.cleanUp();
+        val applicationDto = uncleanedApplicationDto.cleanUp()
         val socket = applicationDto.request.socket?.let { socketSessionCache.get(it) }
 
         log.info { "Creating namespace" }

@@ -1,6 +1,5 @@
 package mk.ukim.finki.dnick.hosting.service
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import mk.ukim.finki.dnick.hosting.image.ImageJobProperties
 import mk.ukim.finki.dnick.hosting.model.entity.ImageStatus
 import mk.ukim.finki.dnick.hosting.model.entity.ImageTag

@@ -94,7 +94,7 @@ class ImageBuildStatusHandler(
         } catch (e: Exception) {
             log.error(e) { "Could not serialize json" }
         }
-        return null;
+        return null
     }
 
     fun ImageStatus.toMessageResponse() = ImageLogStatusMessage.valueOf(this.name.uppercase())

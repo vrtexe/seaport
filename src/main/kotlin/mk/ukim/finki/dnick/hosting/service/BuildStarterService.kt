@@ -13,7 +13,7 @@ class BuildStarterService(
 ) {
 
     companion object {
-        private const val CONCURRENT_IMAGE_JOBS = 5;
+        private const val CONCURRENT_IMAGE_JOBS = 5
     }
 
     @Async

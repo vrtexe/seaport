@@ -55,7 +55,7 @@ class ImageBuildLogger(
         } catch (e: Exception) {
             log.error(e) { "Could not serialize json" }
         }
-        return null;
+        return null
     }
 
     private fun ImageStatus.toMessageResponse() = ImageLogStatusMessage.valueOf(this.name.uppercase())
@@ -73,7 +73,7 @@ abstract class DefaultMessage(
 data class ImageLogMessage(
     val status: ImageLogStatusMessage,
     val data: String,
-) : DefaultMessage(MessageType.IMAGE_LOG);
+) : DefaultMessage(MessageType.IMAGE_LOG)
 
 data class ImageStatusMessage(
     val status: ImageLogStatusMessage,

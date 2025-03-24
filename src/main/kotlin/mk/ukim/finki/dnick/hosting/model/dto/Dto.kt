@@ -36,9 +36,9 @@ data class BaseImageExeDto(
 abstract class BaseImageDto(
     val type: ImageTypeDto
 ) {
-    abstract val id: Int;
-    abstract val language: String;
-    abstract val languageVersion: String?;
+    abstract val id: Int
+    abstract val language: String
+    abstract val languageVersion: String?
 }
 
 enum class ImageTypeDto {

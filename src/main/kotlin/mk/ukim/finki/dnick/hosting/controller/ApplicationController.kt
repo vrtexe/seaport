@@ -2,8 +2,6 @@ package mk.ukim.finki.dnick.hosting.controller
 
 import mk.ukim.finki.dnick.hosting.model.dto.NamespaceDto
 import mk.ukim.finki.dnick.hosting.model.dto.toDto
-import mk.ukim.finki.dnick.hosting.model.entity.BaseImageType
-import mk.ukim.finki.dnick.hosting.model.entity.toDomain
 import mk.ukim.finki.dnick.hosting.service.ApplicationDeploymentService
 import mk.ukim.finki.dnick.hosting.service.ApplicationPersistenceService
 import mk.ukim.finki.dnick.hosting.service.BaseImageService
@@ -16,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile
 @RequestMapping("$API_V1_PATH/application")
 class ApplicationController(
     private val applicationPersistenceService: ApplicationPersistenceService,
-    private val baseImageService: BaseImageService,
     private val applicationDeploymentService: ApplicationDeploymentService,
     private val pipelineService: PipelineService
 ) {

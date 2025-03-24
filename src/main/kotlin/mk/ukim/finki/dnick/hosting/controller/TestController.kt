@@ -19,11 +19,9 @@ import java.util.*
 @RequestMapping("/api/v1")
 @CrossOrigin(origins = ["*"])
 class TestController(
-    private val client: ApiClient,
     private val coreV1Api: CoreV1Api,
     private val namespaceRepository: NamespaceRepository,
     private val applicationPersistenceService: ApplicationPersistenceService,
-    private val imageBuilderService: ImageBuilderService,
     private val pipelineService: PipelineService,
 ) {
 

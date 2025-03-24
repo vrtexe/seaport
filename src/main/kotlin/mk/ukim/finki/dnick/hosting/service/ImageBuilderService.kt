@@ -42,8 +42,6 @@ enum class InternalArgument(val value: String) {
 
 @Service
 class ImageBuilderService(
-    private val imageJobManager: ImageJobManager,
-    private val coreV1Api: CoreV1Api,
     private val baseImageExeRepository: BaseImageExeRepository,
     private val baseImageGitRepository: BaseImageGitRepository,
     private val webdavService: WebdavService,

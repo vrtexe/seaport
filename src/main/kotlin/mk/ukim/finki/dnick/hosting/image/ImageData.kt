@@ -2,12 +2,7 @@ package mk.ukim.finki.dnick.hosting.image
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.JsonNode
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotEmpty
 import org.springframework.web.multipart.MultipartFile
 
 data class ImageBaseParams(

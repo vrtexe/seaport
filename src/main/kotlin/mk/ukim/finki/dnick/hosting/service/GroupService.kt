@@ -37,7 +37,7 @@ class GroupService(
     fun updateGroup(id: Int, request: GroupUpdateRequest): Application {
         return applicationRepository.findByIdOrNull(id)?.let {
             it.name = request.name
-            applicationRepository.save(it);
+            applicationRepository.save(it)
         } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found")
     }
 

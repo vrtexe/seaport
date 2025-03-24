@@ -64,7 +64,7 @@ class ImageJobWatcher(
 
     private fun isPodCompleted(watcher: Watch<V1Pod>, event: BuildStartedEvent): Boolean {
         for (response in watcher) {
-            val pod = response.`object`;
+            val pod = response.`object`
 
             if (pod.isRunning()) {
                 streamLogs(pod, event.imageUid)

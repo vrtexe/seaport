@@ -1,10 +1,6 @@
 package mk.ukim.finki.dnick.hosting.model.entity
 
-import io.hypersistence.utils.hibernate.type.basic.PostgreSQLHStoreType
 import jakarta.persistence.*
-import org.hibernate.annotations.Type
-import java.time.Instant
-import java.util.*
 
 @Entity
 @Table(name = "image_log")
