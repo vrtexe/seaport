@@ -5,3 +5,5 @@ databaseChangeLog:
       file: "db/migrations/1.1_base_image_schema.sql"
   - include:
       file: "db/migrations/1.2_base_image_data.sql"
+  - include:
+      file: 'db/migrations/1.3_add_image_status_and_logs.sql'

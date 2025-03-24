@@ -30,16 +30,16 @@ class TestController(
 
     @PostMapping("test-image-build")
     fun test123(@RequestPart("file") file: MultipartFile) {
-        imageBuilderService.createImage(
-            ImageExeParams(
-                data = ImageData("ngtest", "1.0.0"),
-                file = file,
-                base = ImageBaseParams("nginx", "1.27.1"),
-                buildArgs = mapOf(),
-                namespace = "test-me",
-                uid = UUID.randomUUID().toString()
-            )
-        )
+//        imageBuilderService.createImage(
+//            ImageExeParams(
+//                data = ImageData("ngtest", "1.0.0"),
+//                file = file,
+//                base = ImageBaseParams("nginx", "1.27.1"),
+//                buildArgs = mapOf(),
+//                namespace = "test-me",
+//                uid = UUID.randomUUID().toString()
+//            )
+//        )
     }
 
     @GetMapping("test/app")

@@ -50,7 +50,7 @@ data class Pod(
     val name: String,
     val port: Int,
     val workdir: String,
-    val image: Image,
+    val imageTag: ImageTag,
     val environment: Environment,
 )
 
@@ -64,9 +64,15 @@ data class Service(
 data class Image(
     val id: Int,
     val name: String,
+)
+
+data class ImageTag(
+    val id: Int,
     var version: String,
     val hash: UUID,
+    val arguments: Map<String, String>,
+    val image: Image,
     val baseRef: Int,
-    val arguments: Map<String, String>
 )
+
 

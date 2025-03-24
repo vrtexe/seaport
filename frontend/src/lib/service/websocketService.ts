@@ -1,4 +1,5 @@
-const BASE_URL = 'ws://localhost:8080';
+const BASE_URL = 'ws://localhost:8081';
+// const BASE_URL = 'ws://localhost/app';
 
 export type MessageType = (typeof MessageType)[keyof typeof MessageType];
 export const MessageType = {

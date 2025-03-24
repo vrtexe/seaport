@@ -10,6 +10,11 @@
   import type { Image } from '$lib/types/baseImageRequest';
   import { onMount } from 'svelte';
 
+  const imageTypeLabel: Record<ImageType, string> = {
+      GIT: 'Git',
+      EXE: 'Executable'
+  }   
+
   export let image: Image;
 
   let languages: string[] = [];
@@ -58,17 +63,17 @@
   $: updateBuildToolVersions(buildTool);
 </script>
 
-<div class="flex flex-col gap-6 py-4">
-  <div class="flex">
+<div class="grid gap-8 py-4">
+  <div class="grid">
     <Select
       id="type"
       name="type"
       bind:value={image.type}
-      options={Object.values(ImageType).map(it => ({ name: it, value: it }))}>
+      options={Object.values(ImageType).map(it => ({ name: imageTypeLabel[it], value: it }))}>
       Type
     </Select>
   </div>
-  <div class="flex gap-4">
+  <div class="grid grid-cols-2 gap-4">
     <Select
       id="language"
       name="language"
@@ -87,7 +92,7 @@
   </div>
 
   {#if image.type === ImageType.Git}
-    <div class="flex gap-4">
+    <div class="grid grid-cols-2 gap-4">
       <Select
         id="build-tool"
         name="build-tool"

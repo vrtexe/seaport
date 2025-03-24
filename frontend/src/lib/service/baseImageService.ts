@@ -1,7 +1,8 @@
 import { ImageType, type BuildArg } from '$lib/types/baseImage';
 import type { Image } from '$lib/types/baseImageRequest';
 
-const BASE_URL = 'http://localhost:8080/api/v1';
+const BASE_URL = 'http://localhost:8081/api/v1'
+// const BASE_URL = 'http://localhost/app/api/v1';
 const BASE_IMAGE_API = 'base-image';
 
 type ImageArgResponse = {

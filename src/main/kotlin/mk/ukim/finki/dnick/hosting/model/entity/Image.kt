@@ -18,24 +18,13 @@ class Image(
     @Column(name = "name", nullable = false, length = 64)
     var name: String,
 
-    @Column(name = "version", nullable = false, length = 64)
-    var version: String,
-
-    @Column(name = "hash", nullable = false)
-    var hash: UUID = UUID.randomUUID(),
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "namespace_uid", nullable = false)
     var namespace: Namespace,
 
-    @ManyToOne
-    @JoinColumn(name = "base_ref_id", nullable = false)
-    var base: BaseImageRef,
-
-    @Type(PostgreSQLHStoreType::class)
-    @Column(name = "arguments")
-    var arguments: Map<String, String> = mutableMapOf()
+    @OneToMany(mappedBy = "image")
+    var tags: MutableSet<ImageTag> = mutableSetOf()
 ) : BaseEntity<Int?>() {
 
     override fun extractId() = id

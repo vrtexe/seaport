@@ -8,7 +8,8 @@ import type {
   EnvironmentDto
 } from '$lib/types/baseImageRequest';
 
-const BASE_URL = 'http://localhost:8080/api/v1';
+const BASE_URL = 'http://localhost:8081/api/v1';
+// const BASE_URL = 'http://localhost/app/api/v1';
 const IMAGE_API = 'image';
 const APPLICATION_API = 'application';
 

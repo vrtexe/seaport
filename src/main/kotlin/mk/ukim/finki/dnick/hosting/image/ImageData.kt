@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotEmpty
 import org.springframework.web.multipart.MultipartFile
 
 data class ImageBaseParams(
@@ -15,6 +17,8 @@ data class ImageBaseParams(
 
 data class ImageData(
     val name: String,
+
+    @field:NotBlank(message = "Version is required")
     val version: String
 )
 
@@ -31,21 +35,21 @@ data class ImageExeRequest(
 )
 
 data class ImageExeParams(
-    val namespace: String,
     val file: MultipartFile,
     val base: ImageBaseParams,
     override val uid: String,
     override val data: ImageData,
+    override val namespace: String,
     override val buildArgs: Map<String, String> = mapOf(),
 ) : ImageParamsTyped(ImageParamsType.EXE)
 
 data class ImageGitParams(
-    val namespace: String,
     val buildTool: String,
     val version: String,
     val base: ImageBaseParams,
     override val uid: String,
     override val data: ImageData,
+    override val namespace: String,
     override val buildArgs: Map<String, String> = mapOf(),
 ) : ImageParamsTyped(ImageParamsType.GIT)
 
@@ -61,6 +65,7 @@ abstract class ImageParamsTyped(
 ) {
     abstract val uid: String
     abstract val data: ImageData
+    abstract val namespace: String
     abstract val buildArgs: Map<String, String>
 }
 

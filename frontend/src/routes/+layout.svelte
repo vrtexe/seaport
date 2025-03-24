@@ -1,27 +1,52 @@
+<script lang="ts" context="module">
+  export type Page = (typeof Page)[keyof typeof Page];
+  export const Page = Object.freeze({
+    Documentation: '/(dashboard)/documentation',
+    Explore: '/(dashboard)/explore',
+    Dashboard: '/(dashboard)',
+  } as const);
+
+  const Route: Record<Page, string> = {
+    [Page.Dashboard]: "/",
+    [Page.Explore]: "/explore",
+    [Page.Documentation]: "/documentation",
+  }
+
+  export const PageValues: Page[] = Object.values(Page)
+</script>
+
 <script lang="ts">
   import { page } from '$app/stores';
   import '$lib/styles/app.css';
+  import SeaPort from '$lib/assets/SeaPort.svelte';
+  import SpLine from '$lib/assets/SPLine.svelte';
 
   let header: HTMLElement | undefined;
   let headerHeight: number | undefined;
 
   $: headerStyle = header && getComputedStyle(header);
   $: borderBottomWidth = headerStyle?.borderBottomWidth;
+
+  $: activePage = PageValues.find(v => $page.route.id?.startsWith(v));
 </script>
 
 <header
   bind:this={header}
   bind:clientHeight={headerHeight}
-  class="sticky top-0 z-50 flex items-center gap-16 border-b-2 border-gray-300 bg-white shadow-md">
-  <a href="/" class="flex gap-2 px-2 py-4">
-    <!-- <img alt="l" /> -->
-    <h1>Hosting</h1>
+  class="sticky top-0 z-50 flex items-center gap-8 border-b-2 border-gray-300 bg-white shadow-md">
+  <a href="/" class="flex gap-4 px-4">
+    <div class="text-4xl">
+      <SpLine />
+    </div>
+    <h1 class="flex items-center justify-center text-xl">
+      <SeaPort />
+    </h1>
   </a>
 
   <nav class="flex items-center">
     <ul class="flex gap-2">
       <li>
-        <a class="inline-block px-2 py-4" href="/" class:active={$page.route?.id === '/'}>
+        <a class="inline-block px-2 py-4" href="{Route[Page.Dashboard]}" class:active={activePage === Page.Dashboard}>
           <span>Dashboard</span>
         </a>
       </li>

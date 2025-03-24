@@ -23,6 +23,11 @@ spring:
       max-file-size: 1GB
       max-request-size: 1GB
 
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+
 app-host:
   k8s:
     config:
@@ -40,6 +45,8 @@ app-host:
       image:
         name: image
         value: EMPTY
+  user:
+    namespace: vangel
 
   webdav:
     base-url: http://webdav-service/dav

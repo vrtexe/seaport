@@ -7,7 +7,15 @@ export type ApplicationRequest = {
 
 export type ImageNameProp = { name: string };
 
+export type PartialImage = Partial<ImageNameProp & PartialImageBaseData & (GitImageData | ExeImageData)>;
 export type Image = ImageNameProp & ImageBaseData & (GitImageData | ExeImageData);
+
+export type PartialImageBaseData = {
+  uid: string;
+  data: Partial<ImageDataDto>
+  base: Partial<ImageParams>
+  buildArgs: Record<string, string>;
+} 
 
 export type ImageBaseData = {
   uid: string;

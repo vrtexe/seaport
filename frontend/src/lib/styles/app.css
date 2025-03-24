@@ -21,10 +21,51 @@ body {
   }
 
   button.primary-circle {
-    @apply box-border aspect-square rounded-[50%] border border-blue-600 bg-blue-400 p-2  text-white shadow-md hover:opacity-90 active:opacity-100 active:brightness-90 disabled:opacity-40 disabled:hover:opacity-40 disabled:active:brightness-100;
+    @apply box-border aspect-square rounded-[50%] border border-blue-600 bg-blue-400 p-2 text-white shadow-md hover:opacity-90 active:opacity-100 active:brightness-90 disabled:opacity-40 disabled:hover:opacity-40 disabled:active:brightness-100;
   }
 
   a.primary-button {
     @apply box-border cursor-pointer select-none rounded border border-blue-600 bg-blue-400 px-4 py-0.5 text-white shadow-md hover:opacity-90 active:opacity-100 active:brightness-90;
+  }
+
+  tr > td {
+    padding-block: 1rem;
+    padding-inline: 0.75rem;
+  }
+
+  tbody tr:first-child > td,
+  tbody tr:last-child > td,
+  thead tr:first-child > th,
+  thead tr:last-child > th {
+    padding-left: 1rem;
+  }
+
+  table {
+    width: 100%;
+    overflow: hidden;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    table-layout: auto;
+  }
+
+  thead {
+    box-shadow: 0 5px 10px #e1e5ee;
+    @apply bg-primary text-white;
+  }
+
+  thead > tr > th {
+    padding-block: 0.75rem;
+    padding-inline: 0.75rem;
+    letter-spacing: 0.05rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+
+  tbody tr:nth-child(2n) {
+    background-color: #f1f5fb;
+  }
+
+  tbody tr {
+    @apply border-b border-gray-200;
   }
 }

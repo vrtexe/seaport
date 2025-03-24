@@ -1,0 +1,18 @@
+{
+  "$schema": "./schema/openapi-generator.config.schema.json",
+  "spaces": 2,
+  "generator-cli": {
+    "version": "7.11.0",
+    "generators": {
+      "default": {
+        "generatorName": "typescript-fetch",
+        "inputSpec": "../src/main/resources/api.yaml",
+        "output": "#{cwd}/src/lib/generated",
+        "typeMappings": "Set=Array",
+        "additionalProperties": {
+          "supportsES6": true
+        }
+      }
+    }
+  }
+}

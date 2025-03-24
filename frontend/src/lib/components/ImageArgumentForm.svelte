@@ -6,6 +6,7 @@
   import type { Image } from '$lib/types/baseImageRequest';
 
   export let image: Image;
+  export let readonly = false;
 
   let imageArgs: BuildArg[] = [];
   let buildArgs: BuildArg[] = [];
@@ -49,7 +50,16 @@
     buildToolVersion: string | undefined
   ) {
     buildArgs = [];
-    imageArgs = await fetchImageArgs(type, language, languageVersion, buildTool, buildToolVersion);
+    imageArgs = await fetchImageArgs(type, language, languageVersion, buildTool, buildToolVersion).then(response =>
+      response.map(initializeArgs)
+    );
+  }
+
+  function initializeArgs(base: BuildArg): BuildArg {
+    return <BuildArg>{
+      ...base,
+      value: image.buildArgs[base.name] ?? base.value
+    };
   }
 
   let imageType: ImageType = image.type;
@@ -88,10 +98,11 @@
 
   $: handleImageUpdate(buildArgs);
   $: updateImageArgs(imageType, language, languageVersion, buildTool, buildToolVersion);
+  $: isEmpty = Boolean(readonly && !buildArgs.filter(s => s.type !== BuildArgType.File).length);
 </script>
 
 <div class="py-4">
-  {#if buildArgs?.length}
+  {#if buildArgs?.length && !isEmpty}
     <div class="grid grid-cols-1 gap-4">
       {#each buildArgs as buildArg}
         {#if buildArg.type === BuildArgType.String}
@@ -99,10 +110,11 @@
             id={buildArg.name}
             name={buildArg.name}
             bind:value={buildArg.value}
-            description={buildArg.description}>
+            description={buildArg.description}
+            {readonly}>
             {buildArg.name}
           </InputHorizontal>
-        {:else if buildArg.type === BuildArgType.File}
+        {:else if buildArg.type === BuildArgType.File && !readonly}
           <FileInput id={buildArg.name} name={buildArg.name} bind:value={buildArg.value}>
             <div class="flex items-center justify-between px-2 py-1">
               <span class="text-sm font-bold">{buildArg.name}</span>
@@ -118,6 +130,6 @@
       {/each}
     </div>
   {:else}
-    <p class="text-sm text-gray-600">No content, please fill in the base properties</p>
+    <p class="text-sm text-gray-600">No configurable properties</p>
   {/if}
 </div>

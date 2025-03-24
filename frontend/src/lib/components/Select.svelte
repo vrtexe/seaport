@@ -23,9 +23,9 @@
     bind:value
     {id}
     {name}
-    class="min-w-56 rounded border border-gray-200 bg-white px-4 py-1.5 shadow marker:ml-4">
+    class="min-w-56 rounded border border-gray-200 bg-white px-4 py-2 shadow marker:ml-4">
     {#each options as option}
-      <option value={option.value}>{option.name}</option>
+      <option class="text-lg" value={option.value}>{option.name}</option>
     {/each}
   </select>
 </div>

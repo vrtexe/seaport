@@ -11,7 +11,6 @@ data class NamespaceDto(
 
 data class ExternalServiceDto(val id: Int)
 
-
 data class ApplicationDto(
     val id: Int,
     val name: String,
@@ -79,7 +78,7 @@ data class PodDto(
     val id: Int,
     val name: String,
     val port: Int,
-    val image: ImageDto,
+    val image: ImageTagDto,
     val environment: EnvironmentDto
 )
 
@@ -92,10 +91,15 @@ data class EnvironmentDto(
 data class ImageDto(
     val id: Int,
     val name: String,
+)
+
+data class ImageTagDto(
+    val id: Int,
     var version: String,
     val hash: String,
+    val arguments: Map<String, String>,
+    val image: ImageDto,
     val baseRef: Int,
-    val arguments: Map<String, String>
 )
 
 fun Namespace.toDto(baseImages: Set<BaseImageDto> = setOf()) = NamespaceDto(
@@ -122,7 +126,7 @@ fun Application.toDto(baseImages: Set<BaseImageDto> = setOf()) = ApplicationDto(
                     id = it.id,
                     name = it.name,
                     port = it.port,
-                    image = it.image.toDto(),
+                    image = it.imageTag.toDto(),
                     environment = it.environment.toDto()
                 )
             }.toSet(),
@@ -153,10 +157,15 @@ fun Application.toDto(baseImages: Set<BaseImageDto> = setOf()) = ApplicationDto(
 fun Image.toDto() = ImageDto(
     id = this.id,
     name = this.name,
+)
+
+fun ImageTag.toDto() = ImageTagDto(
+    id = this.id,
     version = this.version,
     hash = this.hash.toString(),
-    baseRef = this.baseRef,
     arguments = this.arguments,
+    image = this.image.toDto(),
+    baseRef = this.baseRef
 )
 
 fun Service.toDto() = ServiceDto(

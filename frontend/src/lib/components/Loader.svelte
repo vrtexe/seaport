@@ -1,4 +1,9 @@
-<div class="lds-ring">
+<script>
+  export { className as class };
+  let className = '';
+</script>
+
+<div class="lds-ring {className}">
   <div></div>
   <div></div>
   <div></div>

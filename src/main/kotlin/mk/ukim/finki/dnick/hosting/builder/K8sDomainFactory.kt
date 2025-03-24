@@ -60,7 +60,7 @@ fun buildDeploymentDomain(namespace: String, deployment: Deployment, environment
                                 deployment.pods.map {
                                     V1Container()
                                         .name(it.name)
-                                        .image("${INTERNAL_REGISTRY}/${it.image.name}:${it.image.version}")
+                                        .image("${INTERNAL_REGISTRY}/${it.imageTag.image.name}:${it.imageTag.version}")
                                         .ports(mutableListOf(V1ContainerPort().containerPort(it.port)))
                                         .env(
                                             mutableListOf(

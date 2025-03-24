@@ -5,6 +5,7 @@ import mk.ukim.finki.dnick.hosting.model.domain.Deployment as DomainDeployment
 import mk.ukim.finki.dnick.hosting.model.domain.Environment as DomainEnvironment
 import mk.ukim.finki.dnick.hosting.model.domain.ExternalService as DomainExternalService
 import mk.ukim.finki.dnick.hosting.model.domain.Image as DomainImage
+import mk.ukim.finki.dnick.hosting.model.domain.ImageTag as DomainImageTag
 import mk.ukim.finki.dnick.hosting.model.domain.Ingress as DomainIngress
 import mk.ukim.finki.dnick.hosting.model.domain.IngressRule as DomainIngressRule
 import mk.ukim.finki.dnick.hosting.model.domain.Namespace as DomainNamespace
@@ -61,7 +62,7 @@ fun Pod.toDomain() = DomainPod(
     name = this.name,
     port = this.port,
     workdir = this.workdir,
-    image = this.activeImage.toDomain(),
+    imageTag = this.activeImage.toDomain(),
     environment = this.environment.toDomain(),
 )
 
@@ -71,13 +72,18 @@ fun Environment.toDomain() = DomainEnvironment(
     content = this.values.map { Pair(it.name, it.value) }.toMap()
 )
 
+fun ImageTag.toDomain() = DomainImageTag(
+    id = this.id!!,
+    hash = this.hash,
+    version = this.version,
+    arguments = this.arguments,
+    image = this.image.toDomain(),
+            baseRef = this.base.id!!,
+)
+
 fun Image.toDomain() = DomainImage(
     id = this.id!!,
     name = this.name,
-    version = this.version,
-    hash = this.hash,
-    baseRef = this.base.id!!,
-    arguments = this.arguments,
 )
 
 fun Namespace.toDomain() = DomainNamespace(

@@ -14,10 +14,8 @@
   } from '$lib/service/applicationServiceDto';
   import { onDestroy, onMount } from 'svelte';
   import Package from 'svelte-material-icons/Package.svelte';
-  import PencilOutline from 'svelte-material-icons/PencilOutline.svelte';
-  import TrashCanOutline from 'svelte-material-icons/TrashCanOutline.svelte';
   import Close from 'svelte-material-icons/Close.svelte';
-  import ModalDialog from '$lib/components/ModalDialog.svelte';
+  import ModalDialog from '$lib/components/dialogs/ModalDialog.svelte';
   import { wsConnectStatus, type DeploymentStatus, type StatusMessage } from '$lib/service/statusWebSocketService';
   import Input from '$lib/components/Input.svelte';
   import ServicePropertiesEdit, { type ApplicationProperty } from '$lib/components/ServicePropertiesEdit.svelte';
@@ -26,7 +24,7 @@
   const HTTPS_PORT = 443;
   const PROTOCOL_PORTS = [HTTPS_PORT, HTTP_PORT];
 
-  const BASE_CLUSTER_URL = 'http://localhost';
+  const BASE_CLUSTER_URL = 'http://localhost:8080';
 
   let namespace: NamespaceDto | undefined;
   let ws: WebSocket;

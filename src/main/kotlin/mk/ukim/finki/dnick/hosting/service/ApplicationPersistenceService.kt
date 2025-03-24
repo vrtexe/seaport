@@ -1,8 +1,6 @@
 package mk.ukim.finki.dnick.hosting.service
 
 import mk.ukim.finki.dnick.hosting.controller.NamespaceController.CreateNamespaceRequest
-import mk.ukim.finki.dnick.hosting.image.ImageExeParams
-import mk.ukim.finki.dnick.hosting.image.ImageGitParams
 import mk.ukim.finki.dnick.hosting.image.ImageParamsTyped
 import mk.ukim.finki.dnick.hosting.model.entity.*
 import mk.ukim.finki.dnick.hosting.repository.*
@@ -22,7 +20,7 @@ class ApplicationPersistenceService(
     private val applicationRepository: ApplicationRepository,
     private val namespaceRepository: NamespaceRepository,
     private val podRepository: PodRepository,
-    private val imageRepository: ImageRepository,
+    private val imageTagRepository: ImageTagRepository,
     private val deploymentRepository: DeploymentRepository,
     private val environmentRepository: EnvironmentRepository,
     private val environmentValueRepository: EnvironmentValueRepository,
@@ -30,8 +28,8 @@ class ApplicationPersistenceService(
     private val servicePortRepository: ServicePortRepository,
     private val ingressRepository: IngressRepository,
     private val ingressRuleRepository: IngressRuleRepository,
-    private val baseImageExeRepository: BaseImageExeRepository,
-    private val baseImageGitRepository: BaseImageGitRepository,
+    private val imageService: ImageService,
+    private val imageRepository: ImageRepository,
 ) {
 
     private fun namespaceFromRequest(request: CreateNamespaceRequest) = Namespace(name = request.name)
@@ -78,8 +76,8 @@ class ApplicationPersistenceService(
     }
 
 
-    private fun createImageCache(images: Map<String, ImageParamsTyped>, namespace: Namespace): (uid: String) -> Image {
-        val state = mutableMapOf<String, Image>()
+    private fun createImageCache(images: Map<String, ImageParamsTyped>): (uid: String) -> ImageTag {
+        val state = mutableMapOf<String, ImageTag>()
 
         return { uid ->
             if (state[uid] != null) {
@@ -87,17 +85,7 @@ class ApplicationPersistenceService(
             }
 
             val image = images[uid] ?: throw ResponseStatusException(BAD_REQUEST, "Image not found")
-            state[uid] = imageRepository.save(
-                Image(
-                    namespace = namespace,
-                    name = image.data.name,
-                    version = image.data.version,
-                    hash = UUID.fromString(image.uid),
-                    base = findBaseImageRef(image),
-                    arguments = image.buildArgs
-                )
-            )
-
+            state[uid] = imageService.saveImage(image, UUID.fromString(image.uid))
             state[uid] ?: throw ResponseStatusException(BAD_REQUEST, "Image not found")
         }
 
@@ -114,7 +102,7 @@ class ApplicationPersistenceService(
         val namespace = createNamespace(data.namespace)
         val application = applicationRepository.save(Application(name = data.name, namespace = namespace))
 
-        val imageHandler = createImageCache(dto.images, namespace)
+        val imageHandler = createImageCache(dto.images)
 
         dto.request.deployments.forEach {
             val image = imageHandler(it.image)
@@ -189,21 +177,6 @@ class ApplicationPersistenceService(
         return applicationRepository.findById(application.id!!).orElse(null)?.toDomain()!!
     }
 
-    fun findBaseImageRef(image: ImageParamsTyped): BaseImageRef {
-        return when (image) {
-            is ImageExeParams -> baseImageExeRepository.findBy(image.base.language, image.base.version)?.ref
-            is ImageGitParams -> baseImageGitRepository.findBy(
-                image.base.language,
-                image.base.version,
-                image.buildTool,
-                image.version
-            )?.ref
-
-            else -> null
-        } ?: throw ResponseStatusException(NOT_FOUND, "Base image not found")
-
-    }
-
     @Transactional
     fun create(): DomainApplication? {
         val namespace = namespaceRepository.save(Namespace(name = "test-namespace-${UUID.randomUUID()}"))
@@ -217,12 +190,19 @@ class ApplicationPersistenceService(
         val image = imageRepository.save(
             Image(
                 name = "test-image",
-                version = "1.0",
                 namespace = namespace,
-                base = BaseImageRef(baseImageExe = null, baseImageGit = null),
+            )
+        )
+
+        val imageTag = imageTagRepository.save(
+            ImageTag(
+                version = "1.0",
                 arguments = mapOf(
                     "name" to "test-image.com",
-                )
+                ),
+                image = image,
+                status = ImageStatus.initialized,
+                base = BaseImageRef(baseImageExe = null, baseImageGit = null),
             )
         )
 
@@ -254,7 +234,7 @@ class ApplicationPersistenceService(
             Pod(
                 name = "test-pod",
                 workdir = ".",
-                activeImage = image,
+                activeImage = imageTag,
                 deployment = deployment,
                 environment = environment,
                 port = 8080

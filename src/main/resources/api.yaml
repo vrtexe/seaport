@@ -1,0 +1,606 @@
+openapi: 3.0.3
+
+info:
+  version: 1.0.0
+  title: seaport.com
+
+servers:
+  - url: http://localhost:8081
+    description: Local setup externally (outside of a cluster) [rootless]
+  - url: http://localhost:8080/app
+    description: Local setup internally (inside a cluster) [rootless]
+  - url: http://localhost/app
+    description: Local setup internally (inside a cluster)
+  - url: http://localhost:8080
+    description: Local setup externally (outside of a cluster)
+paths:
+  /v2/images:
+    get:
+      tags: [ image ]
+      operationId: getImages
+      x-spring-paginated: true
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagesResponse'
+    post:
+      operationId: createImage
+      tags: [ image ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageCreateRequest'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+  /v2/images/{id}:
+    get:
+      operationId: getImage
+      tags: [ image ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageDetails'
+          description: OK
+    patch:
+      operationId: editImage
+      tags: [ image ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageUpdateRequest'
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+          description: OK
+    delete:
+      operationId: deleteImage
+      tags: [ image ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: No content
+  /v2/images/{id}/log:
+    get:
+      operationId: getImageLog
+      tags: [ image ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageLog'
+          description: ok
+  #  /v2/deployment:
+  /v2/groups:
+    get:
+      tags: [ group ]
+      operationId: getAllGroups
+      description: Get all user groups
+      x-spring-paginated: true
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupsResponse'
+    post:
+      tags: [ group ]
+      operationId: createGroup
+      description: Create a new group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupCreateRequest'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+  /v2/groups/{id}:
+    #    get:
+    #      tags: [ group ]
+    #      operationId: getGroup
+    #      description: Get details for a group
+    #      parameters:
+    #        - in: path
+    #          name: id
+    #          required: true
+    #          schema:
+    #            type: integer
+    delete:
+      tags: [ group ]
+      operationId: deleteGroup
+      description: Delete a group
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: ok
+        404:
+          description: Not found
+    patch:
+      tags: [ group ]
+      operationId: updateGroup
+      description: Update a group
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupUpdateRequest'
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        404:
+          description: Not found
+
+  /v2/deplyoments:
+    get:
+      tags: [ deployment ]
+      operationId: getDeployments
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentsResponse'
+    post:
+      tags: [ deployment ]
+      operationId: createDeployment
+      description: Deploy a new application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeploymentCreateRequest'
+      responses:
+        200:
+          description: ok
+  /v2/deployments/{id}:
+    delete:
+      tags: [ deployment ]
+      operationId: deleteDeployment
+      description: Delete a deployment
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: No content
+        404:
+          description: Not found
+    patch:
+      tags: [ deployment ]
+      operationId: updateDeployment
+      description: Update a deployment
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: ok
+        404:
+          description: Not found
+
+components:
+  parameters:
+    pageParam:
+      in: query
+      name: page
+      schema:
+        type: integer
+      description: Zero-based page index (0..N)
+    sizeParam:
+      in: query
+      name: size
+      schema:
+        type: integer
+      description: The size of the page to be returned
+    sortParam:
+      in: query
+      name: sort
+      schema:
+        type: array
+        items:
+          type: string
+      description: >-
+        Sorting criteria in the format: property,(asc|desc).
+        Default sort order is ascending.
+        Multiple sort criteria are supported.
+  schemas:
+    DeploymentCreateRequest:
+      type: object
+      required: [ groupId, deployment, service ]
+      properties:
+        groupId:
+          type: integer
+          description: group id
+        deployment:
+          type: object
+          required: [ name, exposedPort, imageTagId, environment ]
+          properties:
+            name:
+              type: string
+            exposedPort:
+              type: integer
+            imageTagId:
+              type: integer
+            environment:
+              type: object
+              additionalProperties: true
+        service:
+          type: object
+          required: [ name, port ]
+          properties:
+            name:
+              type: string
+            port:
+              type: integer
+        ingress:
+          type: object
+          required: [ name, path ]
+          properties:
+            name:
+              type: string
+            path:
+              type: string
+    DeploymentsResponse:
+      type: object
+      required: [ data, metadata ]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Deployment'
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+    Deployment:
+      type: object
+      required: [ id, name, image, cluster, service ]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        state:
+          $ref: '#/components/schemas/DeploymentState'
+        cluster:
+          type: object
+          required: [ url ]
+          properties:
+            url:
+              type: string
+        group:
+          type: object
+          required: [ id, name ]
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        image:
+          type: object
+          required: [ id, name, version ]
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            version:
+              type: string
+        service:
+          type: object
+          required: [ id. name, port ]
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            port:
+              type: integer
+        ingress:
+          type: object
+          required: [ id, path ]
+          properties:
+            id:
+              type: integer
+            path:
+              type: string
+    DeploymentState:
+      type: string
+      enum:
+        - STARTED
+        - STOPPED
+        - FAILED
+    GroupCreateRequest:
+      type: object
+      required: [ name ]
+      properties:
+        name:
+          type: string
+    GroupUpdateRequest:
+      type: object
+      required: [ name ]
+      properties:
+        name:
+          type: string
+    GroupsResponse:
+      type: object
+      required: [ data, metadata ]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+    Group:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    ImageCreateRequest:
+      type: object
+      required: [ name ]
+      properties:
+        name:
+          type: string
+    ImageUpdateRequest:
+      type: object
+      required: [ name ]
+      properties:
+        name:
+          type: string
+    ImagesResponse:
+      type: object
+      required: [ data, metadata ]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image'
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+    Image:
+      type: object
+      required: [ id, name, releases ]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        latest:
+          $ref: '#/components/schemas/ImageTag'
+        releases:
+          type: integer
+    ImageTag:
+      type: object
+      required: [ id, uid, version, created, status ]
+      properties:
+        id:
+          type: integer
+        uid:
+          type: string
+        version:
+          type: string
+        created:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/ImageTagStatus'
+    ImageLog:
+      type: object
+      required: [ data ]
+      properties:
+        data:
+          type: string
+    ImageTagStatus:
+      type: string
+      enum:
+        - INITIALIZED
+        - STARTED
+        - FAILED
+        - COMPLETED
+    ImageDetails:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Image'
+        - type: object
+          required: [ tags ]
+          properties:
+            tags:
+              type: array
+              items:
+                $ref: '#/components/schemas/ImageTagDetails'
+    ImageTagDetails:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ImageTag'
+        - type: object
+          required: [ arguments, base ]
+          properties:
+            arguments:
+              type: object
+              additionalProperties: true
+            base:
+              $ref: '#/components/schemas/ImageTagDetailsBase'
+    BaseImageType:
+      type: string
+      enum:
+        - GIT
+        - EXE
+    ImageTagDetailsBase:
+      type: object
+      required: [ id, type, arguments, language, version ]
+      properties:
+        id:
+          type: integer
+        type:
+          $ref: '#/components/schemas/BaseImageType'
+        language:
+          type: string
+        version:
+          type: string
+        git:
+          type: object
+          required: [ buildTool, buildToolVersion ]
+          properties:
+            buildTool:
+              type: string
+            buildToolVersion:
+              type: string
+        arguments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageTagDetailsBaseArgument'
+    ImageTagDetailsBaseArgument:
+      type: object
+      required: [ name, description, type, stage ]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          $ref: '#/components/schemas/BaseArgumentType'
+        stage:
+          $ref: '#/components/schemas/BaseArgumentStage'
+    BaseArgumentType:
+      type: string
+      enum:
+        - STRING
+        - FILE
+    BaseArgumentStage:
+      type: string
+      enum:
+        - RUNTIME
+        - BUILD
+    ResponseMetadata:
+      type: object
+      required: [ pagination ]
+      properties:
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      required: [ page, size, totalPages, totalElements ]
+      properties:
+        page:
+          type: integer
+          example: 1
+        size:
+          type: integer
+          example: 20
+        totalPages:
+          type: integer
+          example: 10
+        totalElements:
+          type: integer
+          example: 200
+    Sort:
+      type: object
+      format: sort
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean
+    Pageable:
+      type: object
+      format: pageable
+      properties:
+        page:
+          type: integer
+          minimum: 0
+        size:
+          type: integer
+          minimum: 1
+        sort:
+          type: array
+          items:
+            type: string
+
+
+
+

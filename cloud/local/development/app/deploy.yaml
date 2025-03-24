@@ -5,6 +5,7 @@ metadata:
   labels:
     app: application-source
 spec:
+  replicas: 0
   selector:
     matchLabels:
       app: application-source
@@ -21,7 +22,7 @@ spec:
           args:
             - |
               ./gradlew bootRun --continuous -xtest
-          #              sleep infinity
+              # sleep infinity
           ports:
             - containerPort: 8080
           workingDir: "/var/src"

@@ -23,7 +23,7 @@ class Pod(
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "active_image_id", nullable = false)
-    var activeImage: Image,
+    var activeImage: ImageTag,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

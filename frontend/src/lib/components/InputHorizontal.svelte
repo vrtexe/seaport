@@ -9,13 +9,14 @@
   export let placeholder: string = '';
   export let description: string | undefined = undefined;
   export let labelClass: string = '';
+  export let readonly = false;
 </script>
 
 <div class="grid grid-cols-[0.75fr_3fr_2em] items-center justify-center gap-2">
   <label for={id} class="flex items-center justify-end text-sm opacity-45 {labelClass}">
     <slot />
   </label>
-  <input bind:value {id} {name} class="rounded border border-gray-200 px-4 py-1.5 shadow" type="text" {placeholder} />
+  <input bind:value {id} {name} class="rounded border border-gray-200 px-4 py-1.5 shadow" type="text" {placeholder} {readonly} />
   <span class="hint relative flex justify-center">
     {#if description}
       <InformationOutline height="1.5em" width="1.5em" class="flex items-center justify-center" />

@@ -26,14 +26,16 @@ class ApplicationController(
         return applicationPersistenceService.getApplications(namespace)
             .let { n ->
                 n.toDto(
-                    baseImageService.findBaseImages(
-                        n.applications.flatMap { a -> a.images.map { i -> i.baseRef } }.toSet()
-                    ).mapNotNull {
-                        when (it.type) {
-                            BaseImageType.GIT -> it.baseImageGit?.toDomain()?.toDto()
-                            BaseImageType.EXE -> it.baseImageExe?.toDomain()?.toDto()
-                        }
-                    }.toSet()
+                    setOf()
+//                    baseImageService.findBaseImages(
+//
+////                        n.applications.flatMap { a -> a.images.map { i -> i.baseRef } }.toSet()
+//                    ).mapNotNull {
+//                        when (it.type) {
+//                            BaseImageType.GIT -> it.baseImageGit?.toDomain()?.toDto()
+//                            BaseImageType.EXE -> it.baseImageExe?.toDomain()?.toDto()
+//                        }
+//                    }.toSet()
                 )
             }
     }

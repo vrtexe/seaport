@@ -28,7 +28,7 @@
 <div class="flex h-full">
   <slot name="additional-sidebar-content" />
   <div class="h-full">
-    <SideBar bind:width={sideBarWidth} class="fixed  py-2">
+    <SideBar bind:width={sideBarWidth} class="fixed py-2">
       <div class="grid h-full grid-rows-[auto_1fr_auto]">
         <div class="px-4">
           <slot name="sidebar-actions" />

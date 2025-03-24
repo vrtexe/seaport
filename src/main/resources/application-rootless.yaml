@@ -1,0 +1,7 @@
+app-host:
+  webdav:
+    base-url: http://localhost:8080/webdav/dav
+    k8s-url: http://webdav-service/dav
+
+server:
+  port: 8081

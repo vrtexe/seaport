@@ -15,8 +15,10 @@ class ImageJobBuilder(private val properties: ImageBuilderProperties) {
         const val DESTINATION = "--destination=%s/%s:%s"
         const val INSECURE = "--insecure"
         const val BUILD_ARG = "--build-arg=%s=%s"
+        const val IGNORE_PATH = "--ignore-path=%s"
 
         const val WorkdirVolumeName = "workdir"
+        const val ignoredPaths = "/product_uuid"
         val WorkdirVolumeMount = V1VolumeMount()
             .name(WorkdirVolumeName)
             .mountPath("/workdir")
@@ -92,6 +94,7 @@ class ImageJobBuilder(private val properties: ImageBuilderProperties) {
                     DOCKER_FILE,
                     DESTINATION.format(properties.registry, image.name, image.version),
                     INSECURE,
+                    IGNORE_PATH.format(ignoredPaths),
                     *image.buildArguments.map {
                         BUILD_ARG.format(it.key, it.value)
                     }.toTypedArray()

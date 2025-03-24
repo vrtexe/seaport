@@ -44,10 +44,17 @@ create table if not exists image
 (
     id            serial primary key,
     name          varchar(64) not null,
-    version       varchar(64) not null,
-    hash          uuid        not null,
-    arguments     hstore      not null,
     namespace_uid uuid        not null references namespace (uid) on delete cascade
+);
+
+create table if not exists image_tag
+(
+    id        serial primary key,
+    version   varchar(64)             not null,
+    hash      uuid unique             not null,
+    arguments hstore                  not null,
+    created_at timestamp default now() not null,
+    image_id  serial                  not null references image (id) on delete cascade
 );
 
 create table if not exists environment
@@ -70,7 +77,7 @@ create table if not exists pod
     name            varchar(64)  not null,
     port            int          not null,
     workdir         varchar(255) not null,
-    active_image_id serial       not null references image (id),
+    active_image_id serial       not null references image_tag (id),
     deployment_id   serial       not null references deployment (id) on delete cascade,
     environment_id  serial       not null references environment (id)
 );
@@ -78,11 +85,11 @@ create table if not exists pod
 
 create table if not exists service_port
 (
-    id          serial primary key,
-    name        varchar(64) not null,
-    port        integer     not null,
-    pod_id      serial      not null references pod (id) on delete cascade,
-    service_id  serial      not null references service (id) on delete cascade
+    id         serial primary key,
+    name       varchar(64) not null,
+    port       integer     not null,
+    pod_id     serial      not null references pod (id) on delete cascade,
+    service_id serial      not null references service (id) on delete cascade
 );
 
 create table if not exists ingress

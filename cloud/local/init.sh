@@ -4,8 +4,8 @@ directory=$(dirname "$0")
 
 $directory/cluster/kind-start.sh
 
-kubectl apply -k development
+kubectl apply -k $directory/development
 
-kubectl config view --raw > kubeconfig.yaml
+kubectl config view --raw > $directory/kubeconfig.yaml
 
-cp $directory/kubeconfig.yaml $directory/../../src/main/resources/
+cp -f $directory/kubeconfig.yaml $directory/../../src/main/resources/

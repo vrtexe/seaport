@@ -1,14 +1,11 @@
 package mk.ukim.finki.dnick.hosting.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.kubernetes.client.openapi.apis.AppsV1Api
 import mk.ukim.finki.dnick.hosting.builder.cleanupK8sName
 import mk.ukim.finki.dnick.hosting.controller.ApplicationController
 import mk.ukim.finki.dnick.hosting.image.*
 import mk.ukim.finki.dnick.hosting.model.domain.Deployment
-import mk.ukim.finki.dnick.hosting.model.entity.BaseImageType
-import mk.ukim.finki.dnick.hosting.model.entity.EnvironmentValue
-import mk.ukim.finki.dnick.hosting.model.entity.Image
+import mk.ukim.finki.dnick.hosting.model.entity.*
 import mk.ukim.finki.dnick.hosting.repository.*
 import mk.ukim.finki.dnick.hosting.service.ApplicationDeploymentService.PodData
 import mk.ukim.finki.dnick.hosting.socket.SocketSessionCache
@@ -73,10 +70,11 @@ class PipelineService(
     private val applicationPersistenceService: ApplicationPersistenceService,
     private val socketSessionCache: SocketSessionCache,
     private val baseImageRefRepository: BaseImageRefRepository,
-    private val imageRepository: ImageRepository,
+    private val imageTagRepository: ImageTagRepository,
     private val namespaceRepository: NamespaceRepository,
     private val environmentRepository: EnvironmentRepository,
     private val environmentValueRepository: EnvironmentValueRepository,
+    private val imageRepository: ImageRepository,
 ) {
 
 
@@ -118,8 +116,8 @@ class PipelineService(
     @Transactional
     fun updateAndDeploy(deployment: Deployment, update: DeploymentUpdateDto) {
         deployment.pods.forEach { pod ->
-            val imageData = ImageData(pod.image.name, update.version)
-            baseImageRefRepository.findByIdOrNull(pod.image.baseRef)?.let {
+            val imageData = ImageData(pod.imageTag.image.name, update.version)
+            baseImageRefRepository.findByIdOrNull(pod.imageTag.baseRef)?.let {
                 when (it.type) {
                     BaseImageType.GIT -> it.baseImageGit?.let { i ->
                         buildImage(
@@ -130,7 +128,7 @@ class PipelineService(
                                 base = ImageBaseParams(i.base.language, i.base.version),
                                 uid = UUID.randomUUID().toString(),
                                 data = imageData,
-                                buildArgs = pod.image.arguments
+                                buildArgs = pod.imageTag.arguments
                             )
                         )
                     }
@@ -142,7 +140,7 @@ class PipelineService(
                                 base = ImageBaseParams(i.base.language, i.base.version),
                                 uid = UUID.randomUUID().toString(),
                                 data = imageData,
-                                buildArgs = pod.image.arguments,
+                                buildArgs = pod.imageTag.arguments,
                                 file = update.file!!
                             )
                         )
@@ -150,15 +148,22 @@ class PipelineService(
                 }
                 it
             }?.also {
-                imageRepository.save(
+                val i = imageRepository.save(
                     Image(
                         name = imageData.name,
-                        version = imageData.version,
-                        hash = UUID.randomUUID(),
                         namespace = namespaceRepository.findByName(deployment.namespace)
                             ?: throw RuntimeException("Namespace not found"),
+                    )
+                )
+
+                imageTagRepository.save(
+                    ImageTag(
+                        version = imageData.version,
+                        hash = UUID.randomUUID(),
+                        arguments = pod.imageTag.arguments,
+                        image = i,
                         base = it,
-                        arguments = pod.image.arguments
+                        status = ImageStatus.initialized
                     )
                 )
             }
@@ -243,10 +248,10 @@ class PipelineService(
     }
 
     private fun buildImage(image: ImageParamsTyped) {
-        when (image) {
-            is ImageGitParams -> imageBuilderService.createImage(image)
-            is ImageExeParams -> imageBuilderService.createImage(image)
-        }
+//        when (image) {
+//            is ImageGitParams -> imageBuilderService.createImage(image)
+//            is ImageExeParams -> imageBuilderService.createImage(image)
+//        }
     }
 
     private fun sendText(text: String, socket: WebSocketSession?) {

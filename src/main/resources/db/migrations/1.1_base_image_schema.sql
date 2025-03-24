@@ -47,5 +47,5 @@ create table if not exists base_image_arg
     base_image_ref_id serial              not null references base_image_ref (id) on delete cascade
 );
 
-alter table image
+alter table image_tag
     add column base_ref_id serial not null references base_image_ref (id);

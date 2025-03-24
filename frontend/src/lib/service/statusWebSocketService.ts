@@ -1,4 +1,5 @@
-const BASE_URL = 'ws://localhost:8080';
+const BASE_URL = 'ws://localhost:8081';
+// const BASE_URL = 'ws://localhost/app';
 
 export type DeploymentStatus = (typeof DeploymentStatus)[keyof typeof DeploymentStatus];
 export const DeploymentStatus = {

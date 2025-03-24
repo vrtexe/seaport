@@ -1,10 +1,13 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
     id("java")
     id("org.springframework.boot") version "3.3.0"
     id("io.spring.dependency-management") version "1.1.5"
     id("org.hibernate.orm") version "6.5.2.Final"
+    id("org.openapi.generator") version "7.11.0"
 
 //    id("org.graalvm.buildtools.native") version "0.10.2"
     kotlin("jvm") version "2.0.10"
@@ -18,6 +21,14 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
+}
+
+sourceSets {
+    main {
+        kotlin {
+            srcDir("${layout.buildDirectory.get()}/generated/src/main/kotlin")
+        }
+    }
 }
 
 repositories {
@@ -39,6 +50,8 @@ dependencies {
     implementation("io.kubernetes:client-java-extended:21.0.1")
     implementation("com.github.lookfirst:sardine:5.12")
     implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.8.2")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.28")
+    implementation("io.swagger.parser.v3:swagger-parser:2.1.25")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
@@ -52,9 +65,9 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "21"
+    compilerOptions {
+        freeCompilerArgs.add("-Xjsr305=strict")
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 
@@ -68,6 +81,35 @@ hibernate {
     }
 }
 
-//tasks.jar {
-//    archiveBaseName.set("test.jar")
-//}
+// Define a task for validating one specification
+
+tasks.register<GenerateTask>("generateApi") {
+    generatorName.set("kotlin-spring")
+    inputSpec.set("$rootDir/src/main/resources/api.yaml")
+    outputDir.set("${rootProject.layout.buildDirectory.get()}/generated")
+    apiPackage.set("mk.ukim.finki.dnick.hosting.generated.api")
+    modelPackage.set("mk.ukim.finki.dnick.hosting.generated.model")
+    generateAliasAsModel.set(true)
+    supportingFilesConstrainedTo.set(listOf())
+
+    configOptions.apply {
+        put("useSpringBoot3", "true")
+        put("skipDefaultInterface", "true")
+        put("useTags", "true")
+        put("requestMappingMode", "api_interface")
+        put("interfaceOnly", "true")
+        put("exceptionHandler", "false")
+    }
+
+    typeMappings.apply {
+        put("object+pageable", "Pageable")
+        put("object+sort", "Sort")
+    }
+
+    schemaMappings.apply {
+        put("Pageable","org.springframework.data.domain.Pageable")
+        put("Sort", "org.springframework.data.domain.Sort")
+    }
+
+    configOptions.put("dateLibrary", "java8")
+}

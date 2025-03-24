@@ -6,6 +6,7 @@
   export let id: string;
   export let name: string;
   export let value: string;
+  export let required: boolean = false;
   export let readonly: boolean = false;
   export let placeholder: string = '';
   export let inputClass: string = '';
@@ -15,6 +16,7 @@
 <div class="relative flex min-w-56 flex-col gap-1">
   <label for={id} class="text-xs opacity-45 {labelClass}">
     <slot />
+    {required ? '*' : ''}
   </label>
 
   <input
@@ -22,6 +24,7 @@
     {id}
     {name}
     {readonly}
+    {required}
     class="rounded border border-gray-200 px-4 py-1.5 shadow read-only:opacity-65 read-only:outline-none {inputClass}"
     type="text"
     {placeholder} />
