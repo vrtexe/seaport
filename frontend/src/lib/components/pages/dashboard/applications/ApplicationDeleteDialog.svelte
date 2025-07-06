@@ -2,6 +2,8 @@
   import DangerButton from '$lib/components/buttons/DangerButton.svelte';
   import PrimaryButton from '$lib/components/buttons/PrimaryButton.svelte';
   import DefaultDialog from '$lib/components/dialogs/DefaultDialog.svelte';
+  import Notification, { NotificationType } from '$lib/components/pages/dashboard/deployment/Notification.svelte';
+  import { ClientError } from '$lib/errors/ClientError';
   import { deleteImage } from '$lib/service/imageService';
   import { createEventDispatcher } from 'svelte';
 
@@ -11,6 +13,8 @@
 
   let dialog: DefaultDialog;
   let id: number | undefined;
+
+  let notification: Notification | undefined;
 
   export const open = (nid: number) => {
     id = nid;
@@ -24,7 +28,14 @@
 
   async function handleDelete() {
     if (id === undefined) return;
-    await deleteImage(id);
+    await deleteImage(id).catch(e => {
+      if (e instanceof ClientError) {
+        notification?.open({
+          type: NotificationType.Error,
+          text: e.message
+        });
+      }
+    });
     dispatch('delete');
     closeDialog();
   }
@@ -33,7 +44,7 @@
 <DefaultDialog bind:this={dialog}>
   <svelte:fragment slot="title">Delete application</svelte:fragment>
   <svelte:fragment slot="content">
-    <div class="w-[30rem] min-w-10 max-w-[50rem] px-4 py-2 grid gap-6">
+    <div class="grid w-[30rem] min-w-10 max-w-[50rem] gap-6 px-4 py-2">
       <p>Are you sure you want to delete this application?</p>
       <p>This action is not reversible</p>
     </div>
@@ -47,3 +58,5 @@
     </div>
   </svelte:fragment>
 </DefaultDialog>
+
+<Notification bind:this={notification} />

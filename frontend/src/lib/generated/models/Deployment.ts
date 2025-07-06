@@ -73,6 +73,12 @@ export interface Deployment {
      * @type {string}
      * @memberof Deployment
      */
+    uid: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Deployment
+     */
     name: string;
     /**
      * 
@@ -119,6 +125,7 @@ export interface Deployment {
  */
 export function instanceOfDeployment(value: object): value is Deployment {
     if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('uid' in value) || value['uid'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('cluster' in value) || value['cluster'] === undefined) return false;
     if (!('image' in value) || value['image'] === undefined) return false;
@@ -137,6 +144,7 @@ export function DeploymentFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     return {
         
         'id': json['id'],
+        'uid': json['uid'],
         'name': json['name'],
         'state': json['state'] == null ? undefined : DeploymentStateFromJSON(json['state']),
         'cluster': DeploymentClusterFromJSON(json['cluster']),
@@ -159,6 +167,7 @@ export function DeploymentToJSONTyped(value?: Deployment | null, ignoreDiscrimin
     return {
         
         'id': value['id'],
+        'uid': value['uid'],
         'name': value['name'],
         'state': DeploymentStateToJSON(value['state']),
         'cluster': DeploymentClusterToJSON(value['cluster']),

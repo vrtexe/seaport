@@ -1,8 +1,8 @@
-package mk.ukim.finki.dnick.hosting.service
+package mk.ukim.finki.dnick.hosting.image
 
-import mk.ukim.finki.dnick.hosting.image.ImageJobProperties
 import mk.ukim.finki.dnick.hosting.model.entity.ImageStatus
 import mk.ukim.finki.dnick.hosting.model.entity.ImageTag
+import mk.ukim.finki.dnick.hosting.service.BuildStarterService
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.WebSocketSession
 import java.util.UUID

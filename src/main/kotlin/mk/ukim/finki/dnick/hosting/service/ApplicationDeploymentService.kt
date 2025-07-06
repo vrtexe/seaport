@@ -7,10 +7,7 @@ import io.kubernetes.client.openapi.JSON
 import io.kubernetes.client.openapi.apis.AppsV1Api
 import io.kubernetes.client.openapi.apis.CoreV1Api
 import io.kubernetes.client.openapi.apis.NetworkingV1Api
-import io.kubernetes.client.openapi.models.V1ConfigMapKeySelector
-import io.kubernetes.client.openapi.models.V1Deployment
-import io.kubernetes.client.openapi.models.V1EnvVar
-import io.kubernetes.client.openapi.models.V1EnvVarSource
+import io.kubernetes.client.openapi.models.*
 import io.kubernetes.client.util.PatchUtils
 import mk.ukim.finki.dnick.hosting.builder.*
 import mk.ukim.finki.dnick.hosting.controller.ApplicationController
@@ -112,80 +109,66 @@ class ApplicationDeploymentService(
         val image: ImageData
     )
 
-    fun createService(data: K8sServiceData) {
-        if (serviceExists(data.name, data.namespace)) {
-            coreV1Api.deleteNamespacedService(data.name, data.namespace).execute()
-        }
-
-        coreV1Api.createNamespacedService(data.namespace, buildService(data)).execute()
-    }
-
     fun createService(namespace: String, data: DomainService) {
-        if (serviceExists(data.name, namespace)) {
-            coreV1Api.deleteNamespacedService(data.name, namespace).execute()
-        }
-
+        deleteService(namespace, data)
         coreV1Api.createNamespacedService(namespace, buildServiceDomain(namespace, data)).execute()
     }
 
-
-    fun createIngress(data: IngressDataBuild) {
-        if (ingressExists(data.name, data.namespace)) {
-            networkingV1Api.deleteNamespacedIngress(data.name, data.namespace).execute()
-        }
-
-        networkingV1Api.createNamespacedIngress(data.namespace, buildIngress(data)).execute()
+    fun deleteService(namespace: String, data: DomainService) {
+        deleteService(namespace, data.name)
     }
 
+    fun deleteService(namespace: String, name: String) {
+        if (serviceExists(name, namespace)) {
+            coreV1Api.deleteNamespacedService(name, namespace).execute()
+        }
+    }
 
     fun createIngress(namespace: String, data: Ingress) {
-        if (ingressExists(data.name, namespace)) {
-            networkingV1Api.deleteNamespacedIngress(data.name, namespace).execute()
-        }
-
+        deleteIngress(namespace, data)
         networkingV1Api.createNamespacedIngress(namespace, buildIngressDomain(namespace, data)).execute()
     }
 
-    fun createDeployment(data: DeploymentData) {
-        if (deploymentExists(data.name, data.namespace)) {
-            appsV1Api.deleteNamespacedDeployment(data.name, data.namespace).execute()
-        }
-
-        appsV1Api.createNamespacedDeployment(data.namespace, buildDeployment(data)).execute()
+    fun deleteIngress(namespace: String, data: Ingress) {
+        deleteIngress(namespace, data.name)
     }
 
+    fun deleteIngress(namespace: String, name: String) {
+        if (ingressExists(name, namespace)) {
+            networkingV1Api.deleteNamespacedIngress(name, namespace).execute()
+        }
+    }
 
     fun createConfigMap(namespace: String, data: Environment) {
-        if (configMapExists(data.name, namespace)) {
-            coreV1Api.deleteNamespacedConfigMap(data.name, namespace).execute()
-        }
-
+        deleteConfigMap(namespace, data)
         coreV1Api.createNamespacedConfigMap(namespace, buildConfigMapDomain(namespace, data)).execute()
     }
 
-    fun createDeployment(namespace: String, data: Deployment) {
-        if (deploymentExists(data.name, namespace)) {
-            appsV1Api.deleteNamespacedDeployment(data.name, namespace).execute()
-        }
+    fun deleteConfigMap(namespace: String, data: Environment) {
+        deleteConfigMap(namespace, data.name)
+    }
 
+    fun deleteConfigMap(namespace: String, name: String) {
+        if (configMapExists(name, namespace)) {
+            coreV1Api.deleteNamespacedConfigMap(name, namespace).execute()
+        }
+    }
+
+    fun createDeployment(namespace: String, data: Deployment) {
+        deleteDeployment(data.name, data)
         appsV1Api.createNamespacedDeployment(namespace, buildDeploymentDomain(namespace, data, mapOf())).execute()
     }
 
-    fun createConfigMap(data: ConfigMapData) {
-        if (configMapExists(data.name, data.namespace)) {
-            coreV1Api.deleteNamespacedConfigMap(data.name, data.namespace)
-        }
-
-        coreV1Api.createNamespacedConfigMap(data.namespace, buildConfigMap(data)).execute()
+    fun deleteDeployment(namespace: String, data: Deployment) {
+        deleteDeployment(data.namespace, data.name)
     }
 
-    fun createPod(data: PodData) {
-        if (podExists(data.name, data.namespace)) {
-            coreV1Api.deleteNamespacedPod(data.name, data.namespace).execute()
+    fun deleteDeployment(namespace: String, name: String) {
+        if (deploymentExists(name, namespace)) {
+            appsV1Api.deleteNamespacedDeployment(name, namespace).execute()
         }
-
-        coreV1Api.createNamespacedPod(data.namespace, buildPod(data)).execute()
     }
+
 
     private fun namespaceExists(namespace: String) =
         resourceExists(coreV1Api.readNamespace(namespace)::execute)
@@ -195,8 +178,13 @@ class ApplicationDeploymentService(
         resourceExists(coreV1Api.readNamespacedPod(name, namespace)::execute)
 
     private fun serviceExists(name: String, namespace: String) =
-        resourceExists(coreV1Api.readNamespacedService(name, namespace)::execute)
-
+        resourceExists({
+            coreV1Api.readNamespacedService(name, namespace).buildCall(null).execute().let {
+                if (it.code != 404)
+                    it.body?.let { V1ServiceList.fromJson(it.string()).items.firstOrNull() }
+                else null
+            }
+        })
 
     private fun configMapExists(name: String, namespace: String) =
         resourceExists(coreV1Api.readNamespacedConfigMap(name, namespace)::execute)

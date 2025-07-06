@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank
 import mk.ukim.finki.dnick.hosting.generated.model.*
 import mk.ukim.finki.dnick.hosting.image.*
 import mk.ukim.finki.dnick.hosting.infra.config.UserProperties
+import mk.ukim.finki.dnick.hosting.infra.config.auth.AuthenticationFacade
 import mk.ukim.finki.dnick.hosting.model.dto.ImageBuildRequestDto
 import mk.ukim.finki.dnick.hosting.model.entity.*
 import mk.ukim.finki.dnick.hosting.model.entity.BaseImageType
@@ -14,12 +15,14 @@ import mk.ukim.finki.dnick.hosting.service.InternalArgument
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.util.UriComponentsBuilder
 import java.time.ZoneId
 import java.util.*
+import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Private
 import mk.ukim.finki.dnick.hosting.generated.model.BaseImageType.Companion as BaseImageTypeDto
 import mk.ukim.finki.dnick.hosting.generated.model.Image as ImageDto
 import mk.ukim.finki.dnick.hosting.generated.model.ImageLog as ImageLogDto
@@ -30,10 +33,12 @@ import mk.ukim.finki.dnick.hosting.generated.model.ImageTag as ImageTagDto
 @RequestMapping("/api/v2/images")
 class ImageController(
     private val imageService: ImageService,
-    private val userProperties: UserProperties
+    private val userProperties: UserProperties,
+    private val authenticationFacade: AuthenticationFacade
 ) {
 
     @GetMapping
+    @PreAuthorize("hasAuthority('image-read')")
     fun getImages(pageable: Pageable = Pageable.unpaged()): ResponseEntity<ImagesResponse> {
         return ResponseEntity.ok(
             imageService.getImages(pageable).let {
@@ -48,17 +53,20 @@ class ImageController(
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('image-write')")
     fun deleteImage(@PathVariable("id") id: Int): ResponseEntity<Unit> {
         imageService.deleteImage(id)
         return ResponseEntity.noContent().build()
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('image-read')")
     fun getImage(@PathVariable("id") id: Int): ResponseEntity<ImageDetails> {
         return imageService.getImage(id).toDetailsDto().let { ResponseEntity.ok(it) }
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('image-write')")
     fun createImage(@RequestBody imageCreateRequest: ImageCreateRequest): ResponseEntity<ImageDto> {
         val image = imageService.createImage(imageCreateRequest)
         return ResponseEntity.created(UriComponentsBuilder.fromPath("/api/v1/image/${image.id}").build().toUri())
@@ -66,6 +74,7 @@ class ImageController(
     }
 
     @GetMapping("/{id}/log")
+    @PreAuthorize("hasAuthority('image-read')")
     fun getImageLog(@PathVariable("id") id: Int): ImageLogDto {
         return imageService.getImageLog(id)?.let {
             ImageLogDto(data = it.data)

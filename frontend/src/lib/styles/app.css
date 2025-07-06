@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary-color: theme(colors.primary);
+  --secondary-color: theme(colors.secondary);
+}
+
 html,
 body {
   height: 100%;
@@ -33,10 +38,10 @@ body {
     padding-inline: 0.75rem;
   }
 
-  tbody tr:first-child > td,
-  tbody tr:last-child > td,
-  thead tr:first-child > th,
-  thead tr:last-child > th {
+  tbody tr > td:first-child,
+  tbody tr > td:first-child,
+  thead tr > th:first-child,
+  thead tr > th:first-child {
     padding-left: 1rem;
   }
 

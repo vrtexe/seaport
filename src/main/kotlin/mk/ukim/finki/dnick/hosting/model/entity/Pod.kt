@@ -3,6 +3,7 @@ package mk.ukim.finki.dnick.hosting.model.entity
 import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 
 @Entity
 @Table(name = "pod")
@@ -32,7 +33,10 @@ class Pod(
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "environment_id", nullable = false)
-    var environment: Environment
+    var environment: Environment,
+
+    @OneToMany(mappedBy = "pod", fetch = FetchType.LAZY)
+    var servicePorts: MutableSet<ServicePort> = mutableSetOf(),
 ) : BaseEntity<Int?>() {
 
     override fun extractId() = id

@@ -2,6 +2,7 @@ package mk.ukim.finki.dnick.hosting.model.entity
 
 import mk.ukim.finki.dnick.hosting.model.domain.Application as DomainApplication
 import mk.ukim.finki.dnick.hosting.model.domain.Deployment as DomainDeployment
+import mk.ukim.finki.dnick.hosting.model.domain.DeploymentState as DeploymentStateDomain
 import mk.ukim.finki.dnick.hosting.model.domain.Environment as DomainEnvironment
 import mk.ukim.finki.dnick.hosting.model.domain.ExternalService as DomainExternalService
 import mk.ukim.finki.dnick.hosting.model.domain.Image as DomainImage
@@ -52,10 +53,14 @@ fun ServicePort.toDomain() = DomainServicePort(
 
 fun Deployment.toDomain() = DomainDeployment(
     id = this.id!!,
+    uid = this.uid.toString(),
     name = this.name,
+    state = this.state.toDomain() ?: mk.ukim.finki.dnick.hosting.model.domain.DeploymentState.STARTED,
     namespace = this.application.namespace.name,
     pods = this.pods.map { it.toDomain() }.toSet()
 )
+
+fun DeploymentState.toDomain() = DeploymentStateDomain.of(this.name)
 
 fun Pod.toDomain() = DomainPod(
     id = this.id!!,
@@ -78,7 +83,7 @@ fun ImageTag.toDomain() = DomainImageTag(
     version = this.version,
     arguments = this.arguments,
     image = this.image.toDomain(),
-            baseRef = this.base.id!!,
+    baseRef = this.base.id!!,
 )
 
 fun Image.toDomain() = DomainImage(

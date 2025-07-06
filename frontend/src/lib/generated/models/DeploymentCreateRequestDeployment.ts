@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { DeploymentState } from './DeploymentState';
+import {
+    DeploymentStateFromJSON,
+    DeploymentStateFromJSONTyped,
+    DeploymentStateToJSON,
+    DeploymentStateToJSONTyped,
+} from './DeploymentState';
+
 /**
  * 
  * @export
@@ -27,6 +35,12 @@ export interface DeploymentCreateRequestDeployment {
     name: string;
     /**
      * 
+     * @type {DeploymentState}
+     * @memberof DeploymentCreateRequestDeployment
+     */
+    state: DeploymentState;
+    /**
+     * 
      * @type {number}
      * @memberof DeploymentCreateRequestDeployment
      */
@@ -39,17 +53,20 @@ export interface DeploymentCreateRequestDeployment {
     imageTagId: number;
     /**
      * 
-     * @type {{ [key: string]: any; }}
+     * @type {{ [key: string]: string; }}
      * @memberof DeploymentCreateRequestDeployment
      */
-    environment: { [key: string]: any; };
+    environment: { [key: string]: string; };
 }
+
+
 
 /**
  * Check if a given object implements the DeploymentCreateRequestDeployment interface.
  */
 export function instanceOfDeploymentCreateRequestDeployment(value: object): value is DeploymentCreateRequestDeployment {
     if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('state' in value) || value['state'] === undefined) return false;
     if (!('exposedPort' in value) || value['exposedPort'] === undefined) return false;
     if (!('imageTagId' in value) || value['imageTagId'] === undefined) return false;
     if (!('environment' in value) || value['environment'] === undefined) return false;
@@ -67,6 +84,7 @@ export function DeploymentCreateRequestDeploymentFromJSONTyped(json: any, ignore
     return {
         
         'name': json['name'],
+        'state': DeploymentStateFromJSON(json['state']),
         'exposedPort': json['exposedPort'],
         'imageTagId': json['imageTagId'],
         'environment': json['environment'],
@@ -85,6 +103,7 @@ export function DeploymentCreateRequestDeploymentToJSONTyped(value?: DeploymentC
     return {
         
         'name': value['name'],
+        'state': DeploymentStateToJSON(value['state']),
         'exposedPort': value['exposedPort'],
         'imageTagId': value['imageTagId'],
         'environment': value['environment'],

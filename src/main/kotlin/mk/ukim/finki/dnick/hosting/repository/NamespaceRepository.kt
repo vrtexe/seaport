@@ -9,4 +9,6 @@ import java.util.*
 interface NamespaceRepository : JpaRepository<Namespace, UUID> {
 
     fun findByName(name: String): Namespace?
+
+    fun findByUserUid(uid: UUID): Namespace?
 }

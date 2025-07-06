@@ -6,9 +6,9 @@ const val ErrorReason = "Error"
 const val CompletedReason = "Completed"
 
 fun V1Pod.getTerminatedStatus(): String? {
-    return this.status?.containerStatuses?.first()?.state?.terminated?.reason
+    return this.status?.containerStatuses?.firstOrNull()?.state?.terminated?.reason
 }
 
 fun V1Pod.isRunning(): Boolean {
-    return this.status?.containerStatuses?.first()?.state?.running?.startedAt != null
+    return this.status?.containerStatuses?.firstOrNull()?.state?.running?.startedAt != null
 }

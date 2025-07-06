@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-sso-config
+  namespace: sso
+data:
+  db: postgres
+  db-url: 'jdbc:postgresql://database-service/keycloak'
+  db-username: keycloak_user
+  db-password: password
+

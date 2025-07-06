@@ -4,7 +4,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.kubernetes.client.openapi.apis.BatchV1Api
 import io.kubernetes.client.openapi.models.V1Job
 import mk.ukim.finki.dnick.hosting.model.entity.ImageStatus
-import mk.ukim.finki.dnick.hosting.service.ImageBuildStatusHandler
 import mk.ukim.finki.dnick.hosting.socket.BuildStartedEvent
 import mk.ukim.finki.dnick.hosting.socket.BuildStartedEventPublisher
 import org.springframework.stereotype.Component

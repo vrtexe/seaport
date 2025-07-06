@@ -11,5 +11,4 @@ class BuildDoneEventPublisher(
     fun publish() {
         applicationEventPublisher.publishEvent(BuildDoneEvent())
     }
-
 }

@@ -1,9 +1,10 @@
 import { ImageType, type BuildArg } from '$lib/types/baseImage';
 import type { Image } from '$lib/types/baseImageRequest';
+import {BASE_URL} from "$lib/config";
 
-const BASE_URL = 'http://localhost:8081/api/v1'
+// const BASE_URL = 'http://localhost:8081/api/v1'
 // const BASE_URL = 'http://localhost/app/api/v1';
-const BASE_IMAGE_API = 'base-image';
+const BASE_IMAGE_API = 'v1/base-image';
 
 type ImageArgResponse = {
   arguments: BuildArg[];

@@ -1,6 +1,8 @@
 package mk.ukim.finki.dnick.hosting.model.entity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.util.*
 
 @Entity
@@ -13,6 +15,11 @@ class Namespace(
 
     @Column(name = "name", nullable = false, length = 64)
     var name: String,
+
+    @ManyToOne(cascade = [CascadeType.ALL])
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_uid", nullable = false)
+    var user: User,
 
     @OneToMany(mappedBy = "namespace")
     var applications: MutableSet<Application> = mutableSetOf(),

@@ -7,3 +7,9 @@ databaseChangeLog:
       file: "db/migrations/1.2_base_image_data.sql"
   - include:
       file: 'db/migrations/1.3_add_image_status_and_logs.sql'
+  - include:
+      file: 'db/migrations/1.4_Add_deployment_state.sql'
+  - include:
+      file: 'db/migrations/1.5_Add_deployment_uid.sql'
+  - include:
+      file: 'db/migrations/1.6_Add_user_tables.sql'

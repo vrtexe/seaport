@@ -26,6 +26,7 @@
   let renameDialog: RenameApplicationDialog;
   let releaseTagDialog: ReleaseApplicationTagDialog;
   let deleteDialog: ApplicationDeleteDialog;
+  let notification: Notification;
   let images: ImagesResponse;
 
   onMount(() => {
@@ -45,7 +46,7 @@
 <div class="flex h-full flex-col gap-8 px-6 py-4">
   <div class="flex justify-between">
     <h2 class="text-2xl font-bold">Applications</h2>
-    <PrimaryButton on:click={() => createDialog.open()}>+ New Application</PrimaryButton>
+    <PrimaryButton on:click={() => createDialog.open()}>+ Create Application</PrimaryButton>
   </div>
   <div class="flex flex-1 flex-col justify-between">
     <table>
@@ -81,10 +82,6 @@
               <td class="text-center">{image.releases}</td>
               <td class="text-center">
                 <div class="flex justify-center gap-2">
-                  <PrimaryLinkButton on:click={() => renameDialog.open(image.id, { name: image.name })}>
-                    <RenameOutline class="inline-block" height="1.5em" width="1.5em" />
-                    <span class="hidden lg:inline-block">Rename</span>
-                  </PrimaryLinkButton>
                   <DangerLinkButton on:click={() => deleteDialog.open(image.id)}>
                     <TrashCanOutline class="inline-block" height="1.5em" width="1.5em" />
                     <span class="hidden lg:inline-block">Delete</span>
@@ -98,7 +95,6 @@
               <td>
                 <PrimaryLinkButton href="/application/details/{image.id}">
                   <InformationOutline class="inline-block" height="1.75em" width="1.75em" />
-                  <!-- <span class="hidden md:inline-flex items-center ">View</span> -->
                 </PrimaryLinkButton>
               </td>
             </tr>
@@ -115,6 +111,5 @@
 </div>
 
 <ApplicationCreateDialog bind:this={createDialog} on:save={loadData} />
-<RenameApplicationDialog bind:this={renameDialog} on:save={loadData} />
 <ReleaseApplicationTagDialog bind:this={releaseTagDialog} on:save={loadData} />
 <ApplicationDeleteDialog bind:this={deleteDialog} on:delete={loadData} />

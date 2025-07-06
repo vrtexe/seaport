@@ -1,4 +1,4 @@
-package mk.ukim.finki.dnick.hosting.service
+package mk.ukim.finki.dnick.hosting.image
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging

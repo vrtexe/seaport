@@ -1,5 +1,4 @@
-const BASE_URL = 'ws://localhost:8081';
-// const BASE_URL = 'ws://localhost/app';
+import {WEB_SOCKET_BASE_URL} from "$lib/config";
 
 export type MessageType = (typeof MessageType)[keyof typeof MessageType];
 export const MessageType = {
@@ -18,7 +17,7 @@ export type Message =
     };
 
 export function wsConnectTest(handle: (message: Message) => unknown) {
-  const ws = new WebSocket(`${BASE_URL}/test`);
+  const ws = new WebSocket(`${WEB_SOCKET_BASE_URL}/test`);
   ws.onmessage = function (message: MessageEvent<string>) {
     const messageData = JSON.parse(message.data) as Message;
     handle(messageData);

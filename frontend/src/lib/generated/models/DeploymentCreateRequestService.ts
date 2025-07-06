@@ -25,12 +25,6 @@ export interface DeploymentCreateRequestService {
      * @memberof DeploymentCreateRequestService
      */
     name: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof DeploymentCreateRequestService
-     */
-    port: number;
 }
 
 /**
@@ -38,7 +32,6 @@ export interface DeploymentCreateRequestService {
  */
 export function instanceOfDeploymentCreateRequestService(value: object): value is DeploymentCreateRequestService {
     if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('port' in value) || value['port'] === undefined) return false;
     return true;
 }
 
@@ -53,7 +46,6 @@ export function DeploymentCreateRequestServiceFromJSONTyped(json: any, ignoreDis
     return {
         
         'name': json['name'],
-        'port': json['port'],
     };
 }
 
@@ -69,7 +61,6 @@ export function DeploymentCreateRequestServiceToJSONTyped(value?: DeploymentCrea
     return {
         
         'name': value['name'],
-        'port': value['port'],
     };
 }
 

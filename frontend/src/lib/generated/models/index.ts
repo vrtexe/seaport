@@ -11,6 +11,7 @@ export * from './DeploymentCreateRequestIngress';
 export * from './DeploymentCreateRequestService';
 export * from './DeploymentGroup';
 export * from './DeploymentImage';
+export * from './DeploymentImageTag';
 export * from './DeploymentIngress';
 export * from './DeploymentService';
 export * from './DeploymentState';

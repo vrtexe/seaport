@@ -71,9 +71,9 @@
       </thead>
       <tbody>
         {#if image}
-          {#each image.tags as tag}
-            <tr>
-              <td>
+          {#each image.tags as tag, i}
+            <tr class:font-bold={i === 0} class:bg-orange-50={i === 0}>
+              <td class="text-center">
                 <ApplicationBuildStatus bind:tag />
               </td>
               <td>{tag.version}</td>

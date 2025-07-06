@@ -3,16 +3,16 @@
   export const Page = Object.freeze({
     Documentation: '/(dashboard)/documentation',
     Explore: '/(dashboard)/explore',
-    Dashboard: '/(dashboard)',
+    Dashboard: '/(dashboard)'
   } as const);
 
   const Route: Record<Page, string> = {
-    [Page.Dashboard]: "/",
-    [Page.Explore]: "/explore",
-    [Page.Documentation]: "/documentation",
-  }
+    [Page.Dashboard]: '/',
+    [Page.Explore]: '/explore',
+    [Page.Documentation]: '/documentation'
+  };
 
-  export const PageValues: Page[] = Object.values(Page)
+  export const PageValues: Page[] = Object.values(Page);
 </script>
 
 <script lang="ts">
@@ -20,9 +20,15 @@
   import '$lib/styles/app.css';
   import SeaPort from '$lib/assets/SeaPort.svelte';
   import SpLine from '$lib/assets/SPLine.svelte';
+  import { onMount } from 'svelte';
+  import { initKeycloak, login, logout, register, user } from '$lib/service/keycloakService';
 
   let header: HTMLElement | undefined;
   let headerHeight: number | undefined;
+
+  onMount(() => {
+    initKeycloak();
+  });
 
   $: headerStyle = header && getComputedStyle(header);
   $: borderBottomWidth = headerStyle?.borderBottomWidth;
@@ -46,7 +52,7 @@
   <nav class="flex items-center">
     <ul class="flex gap-2">
       <li>
-        <a class="inline-block px-2 py-4" href="{Route[Page.Dashboard]}" class:active={activePage === Page.Dashboard}>
+        <a class="inline-block px-2 py-4" href={Route[Page.Dashboard]} class:active={activePage === Page.Dashboard}>
           <span>Dashboard</span>
         </a>
       </li>
@@ -64,8 +70,12 @@
   </nav>
 
   <div class="flex h-full flex-1 justify-end gap-4 px-8">
-    <!-- <button class="primary" type="button">Login</button> -->
-    <!-- <button class="primary" type="button">Register</button> -->
+    {#if !$user}
+      <button class="primary" type="button" on:click={login}>Login</button>
+      <button class="primary" type="button" on:click={register}>Register</button>
+    {:else}
+      <button class="primary" type="button" on:click={logout}>Logout</button>
+    {/if}
   </div>
 </header>
 

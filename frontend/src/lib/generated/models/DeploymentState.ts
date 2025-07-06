@@ -18,6 +18,7 @@
  * @export
  */
 export const DeploymentState = {
+    Initial: 'INITIAL',
     Started: 'STARTED',
     Stopped: 'STOPPED',
     Failed: 'FAILED'

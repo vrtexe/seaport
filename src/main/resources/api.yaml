@@ -201,7 +201,22 @@ paths:
         404:
           description: Not found
 
-  /v2/deplyoments:
+  /v2/deployments/{uid}/logs:
+    get:
+      tags: [ deployment ]
+      operationId: triggerDeploymentLogs
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: No content
+
+
+  /v2/deployments:
     get:
       tags: [ deployment ]
       operationId: getDeployments
@@ -241,7 +256,7 @@ paths:
           description: No content
         404:
           description: Not found
-    patch:
+    put:
       tags: [ deployment ]
       operationId: updateDeployment
       description: Update a deployment
@@ -251,6 +266,12 @@ paths:
           required: true
           schema:
             type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeploymentCreateRequest'
       responses:
         200:
           description: ok
@@ -292,25 +313,26 @@ components:
           description: group id
         deployment:
           type: object
-          required: [ name, exposedPort, imageTagId, environment ]
+          required: [ name, state, exposedPort, imageTagId, environment ]
           properties:
             name:
               type: string
+            state:
+              $ref: '#/components/schemas/DeploymentState'
             exposedPort:
               type: integer
             imageTagId:
               type: integer
             environment:
               type: object
-              additionalProperties: true
+              additionalProperties:
+                type: string
         service:
           type: object
           required: [ name, port ]
           properties:
             name:
               type: string
-            port:
-              type: integer
         ingress:
           type: object
           required: [ name, path ]
@@ -331,19 +353,23 @@ components:
           $ref: '#/components/schemas/ResponseMetadata'
     Deployment:
       type: object
-      required: [ id, name, image, cluster, service ]
+      required: [ id, uid, name, image, cluster, service ]
       properties:
         id:
           type: integer
+        uid:
+          type: string
         name:
           type: string
         state:
           $ref: '#/components/schemas/DeploymentState'
         cluster:
           type: object
-          required: [ url ]
+          required: [ url, namespace ]
           properties:
             url:
+              type: string
+            namespace:
               type: string
         group:
           type: object
@@ -355,14 +381,20 @@ components:
               type: string
         image:
           type: object
-          required: [ id, name, version ]
+          required: [ id, name, version, tag ]
           properties:
             id:
               type: integer
             name:
               type: string
-            version:
-              type: string
+            tag:
+              type: object
+              required: [ id, version ]
+              properties:
+                id:
+                  type: integer
+                version:
+                  type: string
         service:
           type: object
           required: [ id. name, port ]
@@ -384,6 +416,7 @@ components:
     DeploymentState:
       type: string
       enum:
+        - INITIAL
         - STARTED
         - STOPPED
         - FAILED

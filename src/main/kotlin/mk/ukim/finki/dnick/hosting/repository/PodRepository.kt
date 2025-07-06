@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PodRepository : JpaRepository<Pod, Int> {
+
+    fun findByActiveImageIdIn(activeImageId: List<Int>): List<Pod>
 }

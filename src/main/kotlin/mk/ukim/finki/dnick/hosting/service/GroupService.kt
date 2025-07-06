@@ -15,12 +15,15 @@ import org.springframework.web.server.ResponseStatusException
 @Service
 class GroupService(
     private val applicationRepository: ApplicationRepository,
-    private val namespaceService: NamespaceService
+    private val namespaceService: NamespaceService,
 ) {
 
     @Transactional(readOnly = true)
     fun getGroups(pageable: Pageable): Page<Application> {
-        return applicationRepository.findAll(pageable)
+        return applicationRepository.findAllByNamespace(
+            namespaceService.getUserNamespace(),
+            pageable
+        )
     }
 
     @Transactional
@@ -35,7 +38,12 @@ class GroupService(
 
     @Transactional
     fun updateGroup(id: Int, request: GroupUpdateRequest): Application {
+        val namespace = namespaceService.resolveUserNamespace()
         return applicationRepository.findByIdOrNull(id)?.let {
+            if (it.namespace.id != namespace.id) {
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found")
+            }
+
             it.name = request.name
             applicationRepository.save(it)
         } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found")
@@ -43,7 +51,11 @@ class GroupService(
 
     @Transactional
     fun deleteGroup(id: Int) {
+        val namespace = namespaceService.resolveUserNamespace()
         applicationRepository.findByIdOrNull(id)?.let {
+            if (it.namespace.id != namespace.id) {
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found")
+            }
             applicationRepository.delete(it)
         } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found")
     }

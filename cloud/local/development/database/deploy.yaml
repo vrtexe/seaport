@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: database-deployment
+  namespace: database
   labels:
     app: database
 spec:
@@ -17,14 +18,21 @@ spec:
         - name: database-container
           image: postgres:16.3-alpine3.20
           ports:
-            - containerPort: 5433
+            - name: db-port
+              containerPort: 5433
           env:
             - name: PGDATA
               value: '/var/lib/postgresql/data/pg'
             - name: POSTGRES_USER
-              value: seaport
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: database-secret
             - name: POSTGRES_PASSWORD
-              value: password
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: database-secret
             - name: POSTGRES_DB
               value: seaport_app
 #          volumeMounts:

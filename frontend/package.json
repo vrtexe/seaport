@@ -23,6 +23,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-svelte": "^2.36.0",
     "globals": "^15.0.0",
+    "keycloak-js": "^26.2.0",
     "postcss": "^8.4.41",
     "prettier": "^3.1.1",
     "prettier-plugin-svelte": "^3.1.2",
@@ -36,5 +37,8 @@
     "vite": "^5.0.3"
   },
   "type": "module",
-  "packageManager": "pnpm@10.2.1+sha512.398035c7bd696d0ba0b10a688ed558285329d27ea994804a52bad9167d8e3a72bcb993f9699585d3ca25779ac64949ef422757a6c31102c12ab932e5cbe5cc92"
+  "packageManager": "pnpm@10.2.1+sha512.398035c7bd696d0ba0b10a688ed558285329d27ea994804a52bad9167d8e3a72bcb993f9699585d3ca25779ac64949ef422757a6c31102c12ab932e5cbe5cc92",
+  "dependencies": {
+    "svelte-select": "^5.8.3"
+  }
 }

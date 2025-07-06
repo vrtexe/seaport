@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-sso-deployment
+  namespace: sso
+  labels:
+    app: keycloak-sso
+spec:
+  selector:
+    matchLabels:
+      app: keycloak-sso
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: keycloak-sso
+    spec:
+      containers:
+        - name: keycloak-sso-container
+          args: [ start-dev ]
+          image: quay.io/keycloak/keycloak:26.2.5
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KC_HTTP_ENABLED
+              value: 'true'
+            - name: KC_PROXY_HEADERS
+              value: xforwarded
+            - name: KC_HOSTNAME
+              value: 'https://localhost/sso'
+            - name: KC_HOSTNAME_ADMIN
+              value: 'https://localhost/sso'
+            - name: KC_PROXY
+              value: edge
+            - name: KC_PROXY_ADDRESS_FORWARDING
+              value: 'true'
+            - name: KC_DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: keycloak-sso-config
+                  key: db-url
+            - name: KC_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: keycloak-sso-config
+                  key: db
+            - name: KC_DB_USERNAME
+              value: keycloak_user
+            - name: KC_DB_PASSWORD
+              value: password
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+              value: admin
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              value: secret

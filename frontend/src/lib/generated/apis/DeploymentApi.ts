@@ -33,8 +33,13 @@ export interface DeleteDeploymentRequest {
     id: number;
 }
 
+export interface TriggerDeploymentLogsRequest {
+    uid: string;
+}
+
 export interface UpdateDeploymentRequest {
     id: number;
+    deploymentCreateRequest: DeploymentCreateRequest;
 }
 
 /**
@@ -60,7 +65,7 @@ export class DeploymentApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/v2/deplyoments`,
+            path: `/v2/deployments`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -117,7 +122,7 @@ export class DeploymentApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v2/deplyoments`,
+            path: `/v2/deployments`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -134,6 +139,36 @@ export class DeploymentApi extends runtime.BaseAPI {
     }
 
     /**
+     */
+    async triggerDeploymentLogsRaw(requestParameters: TriggerDeploymentLogsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['uid'] == null) {
+            throw new runtime.RequiredError(
+                'uid',
+                'Required parameter "uid" was null or undefined when calling triggerDeploymentLogs().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/v2/deployments/{uid}/logs`.replace(`{${"uid"}}`, encodeURIComponent(String(requestParameters['uid']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async triggerDeploymentLogs(requestParameters: TriggerDeploymentLogsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.triggerDeploymentLogsRaw(requestParameters, initOverrides);
+    }
+
+    /**
      * Update a deployment
      */
     async updateDeploymentRaw(requestParameters: UpdateDeploymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -144,15 +179,25 @@ export class DeploymentApi extends runtime.BaseAPI {
             );
         }
 
+        if (requestParameters['deploymentCreateRequest'] == null) {
+            throw new runtime.RequiredError(
+                'deploymentCreateRequest',
+                'Required parameter "deploymentCreateRequest" was null or undefined when calling updateDeployment().'
+            );
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        headerParameters['Content-Type'] = 'application/json';
+
         const response = await this.request({
             path: `/v2/deployments/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PATCH',
+            method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
+            body: DeploymentCreateRequestToJSON(requestParameters['deploymentCreateRequest']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);

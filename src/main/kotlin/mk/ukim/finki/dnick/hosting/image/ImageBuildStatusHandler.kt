@@ -1,4 +1,4 @@
-package mk.ukim.finki.dnick.hosting.service
+package mk.ukim.finki.dnick.hosting.image
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -7,10 +7,11 @@ import mk.ukim.finki.dnick.hosting.model.entity.ImageStatus
 import mk.ukim.finki.dnick.hosting.model.entity.ImageTag
 import mk.ukim.finki.dnick.hosting.repository.ImageLogRepository
 import mk.ukim.finki.dnick.hosting.repository.ImageTagRepository
+import mk.ukim.finki.dnick.hosting.socket.BuildDoneEventPublisher
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
-import java.util.UUID
+import java.util.*
 
 private val log = KotlinLogging.logger {}
 
@@ -19,7 +20,8 @@ class ImageBuildStatusHandler(
     private val objectMapper: ObjectMapper,
     private val imageBuildCache: ImageBuildCache,
     private val imageTagRepository: ImageTagRepository,
-    private val imageLogRepository: ImageLogRepository
+    private val imageLogRepository: ImageLogRepository,
+    private val buildDoneEventPublisher: BuildDoneEventPublisher
 ) {
 
 
@@ -58,6 +60,7 @@ class ImageBuildStatusHandler(
     private fun handleBuildComplete(imageTag: ImageTag, build: ImageBuild) {
         saveLog(imageTag, build)
         cleanupBuild(build.uid)
+        buildDoneEventPublisher.publish()
     }
 
     private fun cleanupBuild(imageUid: UUID) {
@@ -84,7 +87,11 @@ class ImageBuildStatusHandler(
     }
 
     private fun sendStatus(imageBuild: ImageBuild, socket: WebSocketSession) {
-        toStatusJson(imageBuild)?.let { socket.sendMessage(TextMessage(it)) }
+        try {
+            toStatusJson(imageBuild)?.let { socket.sendMessage(TextMessage(it)) }
+        } catch (error: RuntimeException) {
+            log.error(error) { "Could not send message" }
+        }
     }
 
 

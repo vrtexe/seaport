@@ -14,6 +14,7 @@ models/DeploymentCreateRequestIngress.ts
 models/DeploymentCreateRequestService.ts
 models/DeploymentGroup.ts
 models/DeploymentImage.ts
+models/DeploymentImageTag.ts
 models/DeploymentIngress.ts
 models/DeploymentService.ts
 models/DeploymentState.ts

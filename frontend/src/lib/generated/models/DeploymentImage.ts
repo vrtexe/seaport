@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { DeploymentImageTag } from './DeploymentImageTag';
+import {
+    DeploymentImageTagFromJSON,
+    DeploymentImageTagFromJSONTyped,
+    DeploymentImageTagToJSON,
+    DeploymentImageTagToJSONTyped,
+} from './DeploymentImageTag';
+
 /**
  * 
  * @export
@@ -33,10 +41,10 @@ export interface DeploymentImage {
     name: string;
     /**
      * 
-     * @type {string}
+     * @type {DeploymentImageTag}
      * @memberof DeploymentImage
      */
-    version: string;
+    tag: DeploymentImageTag;
 }
 
 /**
@@ -45,7 +53,7 @@ export interface DeploymentImage {
 export function instanceOfDeploymentImage(value: object): value is DeploymentImage {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('version' in value) || value['version'] === undefined) return false;
+    if (!('tag' in value) || value['tag'] === undefined) return false;
     return true;
 }
 
@@ -61,7 +69,7 @@ export function DeploymentImageFromJSONTyped(json: any, ignoreDiscriminator: boo
         
         'id': json['id'],
         'name': json['name'],
-        'version': json['version'],
+        'tag': DeploymentImageTagFromJSON(json['tag']),
     };
 }
 
@@ -78,7 +86,7 @@ export function DeploymentImageToJSONTyped(value?: DeploymentImage | null, ignor
         
         'id': value['id'],
         'name': value['name'],
-        'version': value['version'],
+        'tag': DeploymentImageTagToJSON(value['tag']),
     };
 }
 

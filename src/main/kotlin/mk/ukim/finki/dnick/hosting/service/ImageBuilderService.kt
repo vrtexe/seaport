@@ -1,11 +1,7 @@
 package mk.ukim.finki.dnick.hosting.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.kubernetes.client.openapi.apis.CoreV1Api
-import mk.ukim.finki.dnick.hosting.image.ImageExeParams
-import mk.ukim.finki.dnick.hosting.image.ImageGitParams
-import mk.ukim.finki.dnick.hosting.image.ImageJobManager
-import mk.ukim.finki.dnick.hosting.image.ImageJobProperties
+import mk.ukim.finki.dnick.hosting.image.*
 import mk.ukim.finki.dnick.hosting.model.entity.BaseImageType
 import mk.ukim.finki.dnick.hosting.model.entity.ImageTag
 import mk.ukim.finki.dnick.hosting.repository.BaseImageExeRepository

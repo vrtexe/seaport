@@ -42,7 +42,7 @@
   </svelte:fragment>
   <svelte:fragment slot="actions">
     <div>
-      <PrimaryButton on:click={closeDialog}>Canc el</PrimaryButton>
+      <PrimaryButton on:click={closeDialog}>Cancel</PrimaryButton>
     </div>
     <div>
       <DangerButton on:click={handleDelete}>Confirm</DangerButton>

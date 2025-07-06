@@ -1,6 +1,7 @@
 package mk.ukim.finki.dnick.hosting.model.domain
 
 import java.util.*
+import java.util.stream.Collectors
 
 data class Application(
     val id: Int,
@@ -40,10 +41,34 @@ data class ServiceDeployment(
 
 data class Deployment(
     val id: Int,
+    val uid: String,
     val name: String,
+    val state: DeploymentState,
     val namespace: String,
     val pods: Set<Pod>
 )
+
+data class PartialDeployment(
+    val namespace: String,
+    val deployment: Deployment,
+    val service: Service,
+    val ingress: Ingress?,
+)
+
+enum class DeploymentState(private val value: String) {
+    INITIAL("INITIAL"),
+    STARTED("STARTED"),
+    STOPPED("STOPPED"),
+    FAILED("FAILED");
+
+    companion object {
+        @JvmStatic
+        val VALUE_MAP: Map<String, DeploymentState> = entries.stream()
+            .collect(Collectors.toMap({ it.value }, { it }));
+
+        fun of(str: String?): DeploymentState? = VALUE_MAP.getOrDefault(str?.uppercase(), null)
+    }
+}
 
 data class Pod(
     val id: Int,

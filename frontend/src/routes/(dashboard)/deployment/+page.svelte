@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ApplicationList from '$lib/components/pages/dashboard/applications/ApplicationList.svelte';
+  import DeploymentList from '$lib/components/pages/dashboard/deployment/DeploymentList.svelte';
 </script>
 
-  <ApplicationList />
+<DeploymentList />

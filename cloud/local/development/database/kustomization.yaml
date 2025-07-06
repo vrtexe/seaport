@@ -1,4 +1,5 @@
 resources:
+  - namespace.yaml
   - persistent-volume-claim.yaml
   - secret.yaml
   - deploy.yaml

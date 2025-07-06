@@ -25,6 +25,12 @@ export interface DeploymentCluster {
      * @memberof DeploymentCluster
      */
     url: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof DeploymentCluster
+     */
+    namespace: string;
 }
 
 /**
@@ -32,6 +38,7 @@ export interface DeploymentCluster {
  */
 export function instanceOfDeploymentCluster(value: object): value is DeploymentCluster {
     if (!('url' in value) || value['url'] === undefined) return false;
+    if (!('namespace' in value) || value['namespace'] === undefined) return false;
     return true;
 }
 
@@ -46,6 +53,7 @@ export function DeploymentClusterFromJSONTyped(json: any, ignoreDiscriminator: b
     return {
         
         'url': json['url'],
+        'namespace': json['namespace'],
     };
 }
 
@@ -61,6 +69,7 @@ export function DeploymentClusterToJSONTyped(value?: DeploymentCluster | null, i
     return {
         
         'url': value['url'],
+        'namespace': value['namespace'],
     };
 }
 

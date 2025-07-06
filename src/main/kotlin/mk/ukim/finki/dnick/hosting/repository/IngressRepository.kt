@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface IngressRepository : JpaRepository<Ingress, Int> {
+    fun findByName(name: String): Ingress?
 }

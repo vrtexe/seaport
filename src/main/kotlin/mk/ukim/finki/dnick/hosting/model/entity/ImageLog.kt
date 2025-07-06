@@ -10,7 +10,7 @@ class ImageLog(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
 
-    @Column(name = "data", nullable = false, length = 64)
+    @Column(name = "data", nullable = false)
     var data: String,
 
     @OneToOne

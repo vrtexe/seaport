@@ -2,10 +2,7 @@ package mk.ukim.finki.dnick.hosting.builder
 
 import io.kubernetes.client.custom.IntOrString
 import io.kubernetes.client.openapi.models.*
-import mk.ukim.finki.dnick.hosting.model.domain.Deployment
-import mk.ukim.finki.dnick.hosting.model.domain.Environment
-import mk.ukim.finki.dnick.hosting.model.domain.Ingress
-import mk.ukim.finki.dnick.hosting.model.domain.Service
+import mk.ukim.finki.dnick.hosting.model.domain.*
 
 private val K8S_INVALID_CHARACTERS_REGEX_START = "^[^a-zA-Z0-9]+".toRegex()
 private val K8S_INVALID_CHARACTERS_REGEX_END = "[^a-zA-Z0-9]+$".toRegex()
@@ -37,6 +34,14 @@ fun buildDeploymentDomain(namespace: String, deployment: Deployment, environment
             )
     ).spec(
         V1DeploymentSpec()
+            .replicas(
+                when (deployment.state) {
+                    DeploymentState.INITIAL -> 1
+                    DeploymentState.STARTED -> 1
+                    DeploymentState.STOPPED -> 0
+                    DeploymentState.FAILED -> 0
+                }
+            )
             .selector(
                 V1LabelSelector()
                     .matchLabels(
@@ -139,7 +144,7 @@ fun buildIngressDomain(namespace: String, data: Ingress) = V1Ingress()
                                     listOf(
                                         V1HTTPIngressPath()
                                             .pathType("Prefix")
-                                            .path("/${it.path}(/|$)(.*)")
+                                            .path("/${namespace}/${it.path}(/|$)(.*)")
                                             .backend(
                                                 V1IngressBackend()
                                                     .service(
@@ -176,3 +181,14 @@ fun String.cleanupK8sName(): String {
         .replace(K8S_INVALID_CHARACTERS_REGEX_END, "")
         .replace(K8S_INVALID_CHARACTERS_REGEX, "-")
 }
+
+private val INVALID_IMAGE_TAG_CHARACTERS = "[^a-z0-9_\\-./]+".toRegex()
+private val INVALID_IMAGE_TAG_CHARACTERS_START = "^[^a-z0-9_\\-./]+".toRegex()
+private val INVALID_IMAGE_TAG_CHARACTERS_END = "[^a-z0-9_\\-./]+$".toRegex()
+private val COLLAPSE = "([\\-./])+".toRegex()
+
+fun String.cleanupImageTag() = this.lowercase()
+    .replace(INVALID_IMAGE_TAG_CHARACTERS_START, "")
+    .replace(INVALID_IMAGE_TAG_CHARACTERS_END, "")
+    .replace(INVALID_IMAGE_TAG_CHARACTERS, "-")
+    .replace(COLLAPSE, "$1")

@@ -1,6 +1,5 @@
 package mk.ukim.finki.dnick.hosting.service
 
-import mk.ukim.finki.dnick.hosting.controller.NamespaceController.CreateNamespaceRequest
 import mk.ukim.finki.dnick.hosting.image.ImageParamsTyped
 import mk.ukim.finki.dnick.hosting.model.entity.*
 import mk.ukim.finki.dnick.hosting.repository.*
@@ -30,9 +29,8 @@ class ApplicationPersistenceService(
     private val ingressRuleRepository: IngressRuleRepository,
     private val imageService: ImageService,
     private val imageRepository: ImageRepository,
+    private val namespaceService: NamespaceService,
 ) {
-
-    private fun namespaceFromRequest(request: CreateNamespaceRequest) = Namespace(name = request.name)
 
     @Transactional
     fun getApplications(namespace: String): DomainNamespace {
@@ -43,24 +41,6 @@ class ApplicationPersistenceService(
     fun getDeployment(id: Int): DomainDeployment {
         return deploymentRepository.findByIdOrNull(id)?.toDomain()
             ?: throw ResponseStatusException(BAD_REQUEST, "Missing deployment")
-    }
-
-    @Transactional
-    fun createNamespace(request: CreateNamespaceRequest): DomainNamespace {
-        namespaceRepository.findByName(request.name)?.let {
-            return it.toDomain()
-        }
-
-        return namespaceRepository.save(namespaceFromRequest(request)).toDomain()
-    }
-
-    @Transactional
-    fun createNamespace(name: String): Namespace {
-        namespaceRepository.findByName(name)?.let {
-            return it
-        }
-
-        return namespaceRepository.save(Namespace(name = name))
     }
 
     @Transactional(readOnly = true)
@@ -99,7 +79,7 @@ class ApplicationPersistenceService(
             throw ResponseStatusException(BAD_REQUEST, "Application already exists")
         }
 
-        val namespace = createNamespace(data.namespace)
+        val namespace = namespaceService.resolveUserNamespace()
         val application = applicationRepository.save(Application(name = data.name, namespace = namespace))
 
         val imageHandler = createImageCache(dto.images)
@@ -110,7 +90,8 @@ class ApplicationPersistenceService(
             val deployment = deploymentRepository.save(
                 Deployment(
                     name = it.name,
-                    application = application
+                    application = application,
+                    state = DeploymentState.started
                 )
             )
 
@@ -179,7 +160,7 @@ class ApplicationPersistenceService(
 
     @Transactional
     fun create(): DomainApplication? {
-        val namespace = namespaceRepository.save(Namespace(name = "test-namespace-${UUID.randomUUID()}"))
+        val namespace = namespaceService.resolveUserNamespace()
         val application = applicationRepository.save(
             Application(
                 name = "test-application-${UUID.randomUUID()}",
@@ -210,6 +191,7 @@ class ApplicationPersistenceService(
             Deployment(
                 name = "test-deployment",
                 application = application,
+                state = DeploymentState.started
             )
         )
 

@@ -1,6 +1,5 @@
-import { BASE_URL } from '$lib/config';
+import { configuration } from '$lib/client/config';
 import {
-  Configuration,
   GroupApi,
   type Group,
   type GroupCreateRequest,
@@ -9,17 +8,13 @@ import {
   type Pageable
 } from '$lib/generated';
 
-const configuration = new Configuration({
-  basePath: BASE_URL
-});
-
 const groupApi = new GroupApi(configuration);
 
-export async function getAllGroups(pageable: Pageable): Promise<GroupsResponse> {
+export async function getAllGroups(pageable?: Pageable): Promise<GroupsResponse> {
   return await groupApi.getAllGroups({
-    page: pageable.page,
-    size: pageable.size,
-    sort: pageable.sort
+    page: pageable?.page,
+    size: pageable?.size,
+    sort: pageable?.sort
   });
 }
 

@@ -11,8 +11,6 @@ import io.kubernetes.client.util.Watch
 import io.kubernetes.client.util.Watch.Response
 import mk.ukim.finki.dnick.hosting.model.entity.ImageStatus
 import mk.ukim.finki.dnick.hosting.service.BuildStarterService
-import mk.ukim.finki.dnick.hosting.service.ImageBuildLogger
-import mk.ukim.finki.dnick.hosting.service.ImageBuildStatusHandler
 import mk.ukim.finki.dnick.hosting.socket.BuildStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
@@ -74,7 +72,6 @@ class ImageJobWatcher(
             if (podStatus != null) {
                 getImageStatus(podStatus)?.let {
                     imageBuildStatusHandler.updateStatus(it, event.imageUid)
-                    buildStarterService.startBuild()
                     if (it == ImageStatus.failed) {
                         batchV1Api.deleteNamespacedJob(event.jobName, event.namespace).executeAsync(null)
                     }

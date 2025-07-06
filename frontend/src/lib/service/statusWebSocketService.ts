@@ -1,4 +1,5 @@
-const BASE_URL = 'ws://localhost:8081';
+import {WEB_SOCKET_BASE_URL} from "$lib/config";
+
 // const BASE_URL = 'ws://localhost/app';
 
 export type DeploymentStatus = (typeof DeploymentStatus)[keyof typeof DeploymentStatus];
@@ -14,7 +15,7 @@ export type StatusMessage = {
 };
 
 export function wsConnectStatus(handle: (message: StatusMessage) => unknown) {
-  const ws = new WebSocket(`${BASE_URL}/status`);
+  const ws = new WebSocket(`${WEB_SOCKET_BASE_URL}/status`);
   ws.onmessage = (message: MessageEvent<string>) => {
     console.log(message.data)
     const messageData = JSON.parse(message.data) as StatusMessage;

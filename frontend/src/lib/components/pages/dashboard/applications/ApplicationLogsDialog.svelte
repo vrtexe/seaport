@@ -57,22 +57,22 @@
   }
 
   $: handleStatusChange(realtimeStatus);
-  $: realtimeStatus && doneStatuses.includes(realtimeStatus) && tag && (tag.status = realtimeStatus)
+  $: realtimeStatus && doneStatuses.includes(realtimeStatus) && tag && (tag.status = realtimeStatus);
   $: lines = log?.data ? log.data.split('\n').toReversed() : [];
 </script>
 
 <DefaultDialog height="80%" bind:this={dialog}>
   <svelte:fragment slot="title">Application build log</svelte:fragment>
   <svelte:fragment slot="content">
-    <div class="flex flex-col-reverse min-w-[60rem] max-w-[90rem]">
+    <div class="flex min-w-[60rem] max-w-[90rem] flex-col-reverse">
       {#if lines.length}
         {#each lines as line, i}
-        <div class="flex gap-x-2">
-          <span class="select-none text-sm font-bold opacity-25 w-4">{lines.length - i}</span>
-          <span>
-            <AnsiTexts values={parseAnsi(line)} />
-          </span>
-        </div>
+          <div class="flex gap-x-2">
+            <span class="flex w-4 select-none items-center text-sm font-bold opacity-25">{lines.length - i}</span>
+            <span>
+              <AnsiTexts values={parseAnsi(line)} />
+            </span>
+          </div>
         {/each}
       {/if}
     </div>

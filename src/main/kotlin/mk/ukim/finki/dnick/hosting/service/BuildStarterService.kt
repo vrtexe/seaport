@@ -1,5 +1,6 @@
 package mk.ukim.finki.dnick.hosting.service
 
+import mk.ukim.finki.dnick.hosting.image.ImageBuildCache
 import mk.ukim.finki.dnick.hosting.image.ImageJobManager
 import mk.ukim.finki.dnick.hosting.socket.BuildDoneEvent
 import org.springframework.context.event.EventListener

@@ -26,7 +26,10 @@ class ServicePort(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "pod_id", nullable = false)
-    var pod: Pod
+    var pod: Pod,
+
+    @OneToMany(mappedBy = "servicePort", fetch = FetchType.LAZY)
+    var ingressRules: MutableSet<IngressRule> = mutableSetOf(),
 ) : BaseEntity<Int?>() {
 
     override fun extractId() = id

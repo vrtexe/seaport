@@ -1,11 +1,12 @@
 package mk.ukim.finki.dnick.hosting.service
 
+import mk.ukim.finki.dnick.hosting.builder.cleanupImageTag
 import mk.ukim.finki.dnick.hosting.generated.model.ImageCreateRequest
 import mk.ukim.finki.dnick.hosting.generated.model.ImageUpdateRequest
 import mk.ukim.finki.dnick.hosting.image.ImageExeParams
 import mk.ukim.finki.dnick.hosting.image.ImageGitParams
 import mk.ukim.finki.dnick.hosting.image.ImageParamsTyped
-import mk.ukim.finki.dnick.hosting.infra.config.UserProperties
+
 import mk.ukim.finki.dnick.hosting.model.dto.ImageBuildRequestDto
 import mk.ukim.finki.dnick.hosting.model.entity.*
 import mk.ukim.finki.dnick.hosting.repository.*
@@ -13,8 +14,8 @@ import mk.ukim.finki.dnick.hosting.socket.SocketSessionCache
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -32,19 +33,20 @@ class ImageService(
     private val baseImageGitRepository: BaseImageGitRepository,
     private val namespaceService: NamespaceService,
     private val imageRepository: ImageRepository,
-    private val userProperties: UserProperties,
     private val imageLogRepository: ImageLogRepository,
+    private val podRepository: PodRepository,
 ) {
 
     @Transactional
     fun createImage(image: ImageCreateRequest): Image {
-        imageRepository.findBy(image.name, userProperties.namespace)?.let {
+        val namespace = namespaceService.resolveUserNamespace()
+        imageRepository.findBy(image.name, namespace.name)?.let {
             throw ResponseStatusException(BAD_REQUEST, "An image with name ${image.name} already exists")
         }
         return imageRepository.save(
             Image(
-                name = image.name,
-                namespace = namespaceService.resolveUserNamespace()
+                name = image.name.cleanupImageTag(),
+                namespace = namespace
             )
         )
     }
@@ -56,7 +58,8 @@ class ImageService(
 
     @Transactional(readOnly = true)
     fun getImages(pageable: Pageable): Page<Image> {
-        return imageRepository.findAllByNamespace(userProperties.namespace, pageable)
+        val namespace = namespaceService.resolveUserNamespace()
+        return imageRepository.findAllByNamespace(namespace.name, pageable)
     }
 
     @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
@@ -68,16 +71,17 @@ class ImageService(
     @Transactional
     fun editImage(id: Int, update: ImageUpdateRequest): Image {
         val image = getImage(id)
-        if (image.name == update.name) {
+        val updatedName = update.name.cleanupImageTag()
+        if (image.name == updatedName) {
             return image
         }
-
-        imageRepository.findBy(update.name, userProperties.namespace)?.let {
+        val namespace = namespaceService.resolveUserNamespace()
+        imageRepository.findBy(updatedName, namespace.name)?.let {
             if (it.id != id)
-                throw ResponseStatusException(BAD_REQUEST, "An image with name: `${update.name}` already exists.")
+                throw ResponseStatusException(BAD_REQUEST, "An image with name: `${updatedName}` already exists.")
         }
 
-        image.name = update.name
+        image.name = updatedName
 
         return imageRepository.save(image)
     }
@@ -85,6 +89,9 @@ class ImageService(
     @Transactional
     fun deleteImage(id: Int) {
         val image = getImage(id)
+        if (podRepository.findByActiveImageIdIn(image.tags.map { it.id }.filterNotNull()).isNotEmpty()) {
+            throw ResponseStatusException(BAD_REQUEST, "The application is referenced by a deployment.")
+        }
         imageRepository.delete(image)
     }
 
@@ -107,7 +114,7 @@ class ImageService(
         val image = imageRepository.save(
             Image(
                 namespace = namespaceService.resolveUserNamespace(),
-                name = imageParams.data.name,
+                name = imageParams.data.name.cleanupImageTag(),
             )
         )
 
@@ -117,7 +124,7 @@ class ImageService(
     private fun saveImageTag(imageParams: ImageParamsTyped, image: Image, hash: UUID = UUID.randomUUID()): ImageTag {
         return imageTagRepository.saveAndFlush(
             ImageTag(
-                version = imageParams.data.version,
+                version = imageParams.data.version.cleanupImageTag(),
                 hash = hash,
                 arguments = imageParams.buildArgs,
                 image = image,

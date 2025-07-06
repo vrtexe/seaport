@@ -1,4 +1,4 @@
-package mk.ukim.finki.dnick.hosting.service
+package mk.ukim.finki.dnick.hosting.image
 
 import org.springframework.stereotype.Component
 import java.util.*

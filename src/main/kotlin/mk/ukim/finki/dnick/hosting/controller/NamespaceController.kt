@@ -4,12 +4,7 @@ import mk.ukim.finki.dnick.hosting.model.dto.NamespaceDto
 import mk.ukim.finki.dnick.hosting.model.dto.toDto
 import mk.ukim.finki.dnick.hosting.service.ApplicationPersistenceService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.net.URI
 
 @RestController
@@ -20,9 +15,9 @@ class NamespaceController(val applicationPersistenceService: ApplicationPersiste
 
     @PostMapping
     fun createNamespace(@RequestBody body: CreateNamespaceRequest): ResponseEntity<Void> {
-        val namespace = applicationPersistenceService.createNamespace(body)
+//        val namespace = applicationPersistenceService.createNamespace(body)
 
-        return ResponseEntity.created(URI("$API_V1_PATH/namespace/${namespace.id}")).build()
+        return ResponseEntity.created(URI("$API_V1_PATH/namespace/${body.name}")).build()
     }
 
     @GetMapping("/{uid}")

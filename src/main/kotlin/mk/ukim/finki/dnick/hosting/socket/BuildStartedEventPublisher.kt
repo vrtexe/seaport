@@ -8,7 +8,7 @@ class BuildStartedEventPublisher(
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
 
-    fun publish(event :BuildStartedEvent) {
+    fun publish(event: BuildStartedEvent) {
         applicationEventPublisher.publishEvent(event)
     }
 
