@@ -7,7 +7,10 @@ import io.kubernetes.client.openapi.JSON
 import io.kubernetes.client.openapi.apis.AppsV1Api
 import io.kubernetes.client.openapi.apis.CoreV1Api
 import io.kubernetes.client.openapi.apis.NetworkingV1Api
-import io.kubernetes.client.openapi.models.*
+import io.kubernetes.client.openapi.models.V1ConfigMapKeySelector
+import io.kubernetes.client.openapi.models.V1Deployment
+import io.kubernetes.client.openapi.models.V1EnvVar
+import io.kubernetes.client.openapi.models.V1EnvVarSource
 import io.kubernetes.client.util.PatchUtils
 import mk.ukim.finki.dnick.hosting.builder.*
 import mk.ukim.finki.dnick.hosting.controller.ApplicationController
@@ -178,13 +181,14 @@ class ApplicationDeploymentService(
         resourceExists(coreV1Api.readNamespacedPod(name, namespace)::execute)
 
     private fun serviceExists(name: String, namespace: String) =
-        resourceExists({
-            coreV1Api.readNamespacedService(name, namespace).buildCall(null).execute().let {
-                if (it.code != 404)
-                    it.body?.let { V1ServiceList.fromJson(it.string()).items.firstOrNull() }
-                else null
-            }
-        })
+        resourceExists(coreV1Api.readNamespacedService(name, namespace)::execute)
+//        resourceExists({
+//            coreV1Api.readNamespacedService(name, namespace).buildCall(null).execute().let {
+//                if (it.code != 404)
+//                    it.body?.let { V1ServiceList.fromJson(it.string()).items.firstOrNull() }
+//                else null
+//            }
+//        })
 
     private fun configMapExists(name: String, namespace: String) =
         resourceExists(coreV1Api.readNamespacedConfigMap(name, namespace)::execute)

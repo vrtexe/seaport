@@ -14,6 +14,19 @@ servers:
   - url: http://localhost:8080
     description: Local setup externally (outside of a cluster)
 paths:
+  /v2/namespace/user:
+    get:
+      tags: [ namespace ]
+      operationId: getNamespace
+      description: Get the namespace for the authenticated
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Namespace'
+
   /v2/images:
     get:
       tags: [ image ]
@@ -450,7 +463,13 @@ components:
           type: integer
         name:
           type: string
-
+    Namespace:
+      type: object
+      properties:
+        uid:
+          type: string
+        name:
+          type: string
     ImageCreateRequest:
       type: object
       required: [ name ]

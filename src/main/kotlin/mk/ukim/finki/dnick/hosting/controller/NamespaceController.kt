@@ -1,28 +1,20 @@
 package mk.ukim.finki.dnick.hosting.controller
 
-import mk.ukim.finki.dnick.hosting.model.dto.NamespaceDto
-import mk.ukim.finki.dnick.hosting.model.dto.toDto
-import mk.ukim.finki.dnick.hosting.service.ApplicationPersistenceService
+import mk.ukim.finki.dnick.hosting.generated.api.NamespaceApi
+import mk.ukim.finki.dnick.hosting.generated.model.Namespace
+import mk.ukim.finki.dnick.hosting.mapper.toResponse
+import mk.ukim.finki.dnick.hosting.service.NamespaceService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import java.net.URI
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("$API_V1_PATH/namespace")
-class NamespaceController(val applicationPersistenceService: ApplicationPersistenceService) {
+@RequestMapping("/api")
+class NamespaceController(private val namespaceService: NamespaceService) : NamespaceApi {
 
-    data class CreateNamespaceRequest(val name: String)
-
-    @PostMapping
-    fun createNamespace(@RequestBody body: CreateNamespaceRequest): ResponseEntity<Void> {
-//        val namespace = applicationPersistenceService.createNamespace(body)
-
-        return ResponseEntity.created(URI("$API_V1_PATH/namespace/${body.name}")).build()
+//    @GetMapping("/v2/namespace/user")
+    override fun getNamespace(): ResponseEntity<Namespace> {
+        return ResponseEntity.ok(namespaceService.findUserNamespace().toResponse())
     }
-
-    @GetMapping("/{uid}")
-    fun getNamespace(@PathVariable uid: String): NamespaceDto {
-        return applicationPersistenceService.getNamespace(uid).toDto()
-    }
-
 }

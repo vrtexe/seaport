@@ -83,8 +83,16 @@ class DeploymentService(
             "Deployment with id: $id not found"
         )
 
-        val namespace = namespaceService.resolveUserNamespace()
+        val deploymentData = PartialDeployment(
+            namespace = deployment.application.namespace.name,
+            deployment = deployment.toDomain(),
+            service = deployment.getDeploymentService().toDomain(),
+            ingress = deployment.getDeploymentIngress()?.toDomain(),
+        )
 
+        deliveryService.deleteDeployment(deploymentData)
+
+        val namespace = namespaceService.resolveUserNamespace()
 
         if (deployment.application.namespace.id != namespace.id) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "Deployment with id: $id not found")
@@ -96,7 +104,7 @@ class DeploymentService(
                     ingressRule.id?.let { ingressRuleRepository.deleteById(it) }
                 }
 
-                servicePort.ingressRules.first().ingress.id?.let { ingressRepository.deleteById(it) }
+                servicePort.ingressRules.firstOrNull()?.ingress?.id?.let { ingressRepository.deleteById(it) }
             }
 
             pod.servicePorts.forEach { servicePort -> servicePort.id?.let { servicePortRepository.deleteById(it) } }
@@ -303,7 +311,19 @@ class DeploymentService(
     fun fetchDeploymentData(uid: UUID): PartialDeployment? {
         return deploymentRepository.findByUid(uid)?.let { deployment ->
             PartialDeployment(
-                namespace = namespaceService.getUserNamespace(),
+                namespace = deployment.application.namespace.name,
+                deployment = deployment.toDomain(),
+                service = deployment.getDeploymentService().toDomain(),
+                ingress = deployment.getDeploymentIngress()?.toDomain(),
+            )
+        }
+    }
+
+    @Transactional(readOnly = true)
+    fun fetchDeploymentDataById(id: Int): PartialDeployment? {
+        return deploymentRepository.findByIdOrNull(id)?.let { deployment ->
+            PartialDeployment(
+                namespace = deployment.application.namespace.name,
                 deployment = deployment.toDomain(),
                 service = deployment.getDeploymentService().toDomain(),
                 ingress = deployment.getDeploymentIngress()?.toDomain(),

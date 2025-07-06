@@ -32,6 +32,7 @@ export * from './ImageTagDetailsBaseGit';
 export * from './ImageTagStatus';
 export * from './ImageUpdateRequest';
 export * from './ImagesResponse';
+export * from './Namespace';
 export * from './Pageable';
 export * from './Pagination';
 export * from './ResponseMetadata';

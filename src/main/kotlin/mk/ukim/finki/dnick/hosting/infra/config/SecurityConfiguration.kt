@@ -24,6 +24,7 @@ class SecurityConfiguration(private val authenticationConverter: AuthenticationJ
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
                 it.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/**").permitAll()
                     .anyRequest().permitAll()
             }
             .oauth2ResourceServer {

@@ -25,6 +25,7 @@ export function connectDeploymentStatusWebSocket(
   handle: (message: StatusMessageResponse) => unknown
 ) {
   const ws = new WebSocket(`${WEB_SOCKET_BASE_URL}/deployment/status`);
+
   ws.onmessage = (message: MessageEvent<string>) => {
     const messageData = JSON.parse(message.data) as StatusMessageResponse;
     handle(messageData);

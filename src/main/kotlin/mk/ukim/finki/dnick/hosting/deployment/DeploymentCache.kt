@@ -13,8 +13,15 @@ class DeploymentCache {
     private val queue = LinkedList<UUID>()
 
     fun queue(deployment: Deployment) {
+        if (isPresent(deployment)) return
         queue.add(deployment.uid)
         queued[deployment.uid] = deployment
+    }
+
+    private fun isPresent(deployment: Deployment): Boolean {
+        return queue.contains(deployment.uid) ||
+                runningQueue.containsKey(deployment.uid) ||
+                queued.containsKey(deployment.uid)
     }
 
     fun dequeue(): Deployment? {
@@ -24,12 +31,12 @@ class DeploymentCache {
         }
     }
 
-    fun removeBuild(uid: UUID) {
+    fun remove(uid: UUID) {
         runningQueue.remove(uid)
     }
 
     fun getDeployment(uid: UUID) = runningQueue[uid]
-
+    fun findDeployment(uid: UUID) = runningQueue[uid] ?: queued[uid]
     fun jobCount() = queue.size
 
 }

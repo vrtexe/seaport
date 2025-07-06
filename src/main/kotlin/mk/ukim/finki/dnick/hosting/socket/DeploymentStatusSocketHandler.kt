@@ -2,7 +2,6 @@ package mk.ukim.finki.dnick.hosting.socket
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import mk.ukim.finki.dnick.hosting.deployment.DeploymentStatusHandler
-import mk.ukim.finki.dnick.hosting.image.ImageBuildStatusHandler
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage

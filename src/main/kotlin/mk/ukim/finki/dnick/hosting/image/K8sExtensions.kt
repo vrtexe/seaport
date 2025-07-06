@@ -12,3 +12,7 @@ fun V1Pod.getTerminatedStatus(): String? {
 fun V1Pod.isRunning(): Boolean {
     return this.status?.containerStatuses?.firstOrNull()?.state?.running?.startedAt != null
 }
+
+fun V1Pod.isReady(): Boolean {
+    return this.status.conditions.find { it.type == "Ready" && it.status == "True" } != null
+}

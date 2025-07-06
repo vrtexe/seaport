@@ -47,7 +47,7 @@
         ? {
             ingress: {
               name: data.ingress.name || `${data.deployment.name}-external`,
-              path: data.ingress.path
+              path: data.ingress.path || `${data.deployment.name}`
             }
           }
         : {})
@@ -67,7 +67,8 @@
     type Group,
     type Image,
     type ImageDetails,
-    type ImageTag
+    type ImageTag,
+    type Namespace
   } from '$lib/generated';
   import { getAllGroups } from '$lib/service/groupService';
   import { getImage, getImages } from '$lib/service/imageService';
@@ -80,6 +81,7 @@
   import { createDeployment } from '$lib/service/deploymentService';
   import Notification, { NotificationType } from '$lib/components/pages/dashboard/deployment/Notification.svelte';
   import { ClientError } from '$lib/errors/ClientError';
+  import { getUserNamespace } from '$lib/service/namespaceService';
 
   let data: DeploymentData = {
     deployment: {
@@ -109,10 +111,17 @@
 
   let environmentDialog: EnvironmentDialog | undefined;
 
+  let namespace: Namespace | undefined;
+
   onMount(() => {
     loadGroups();
     loadImages();
+    loadNamespace();
   });
+
+  const loadNamespace = async () => {
+    namespace = await getUserNamespace();
+  };
 
   const loadGroups = async () => {
     groups = await getAllGroups().then(s => s.data);
@@ -133,7 +142,7 @@
     data.imageTag = imageDetails.tags[0];
   };
 
-  let fixedText: HTMLSpanElement | undefined;
+  let rect: DOMRectReadOnly | undefined;
 
   const handlePathInput = (e: NativeEvent<Event, HTMLInputElement>) => {
     e.currentTarget.value = e.currentTarget.value.replace(' ', '');
@@ -255,11 +264,14 @@
             name="external-path"
             placeholder={data.deployment.name || 'deployment'}
             disabled={!data.ingress.enabled}
-            inputStyle="padding-left: {fixedText?.clientWidth}px;"
+            inputStyle="padding-left: {(rect?.right ?? 0) + 2}px;"
             on:input={handlePathInput}
             bind:value={data.ingress.path}>Path</Input>
-          <span bind:this={fixedText} class="absolute bottom-0 left-0 border border-transparent py-2 pl-4 text-gray-400"
-            >/namespace/</span>
+          <span
+            bind:contentRect={rect}
+            class="absolute bottom-0 left-0 border border-transparent py-2 pl-4 text-gray-300">
+            /{namespace?.name ?? ''}/
+          </span>
         </div>
       </fieldset>
 

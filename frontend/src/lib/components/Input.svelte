@@ -19,7 +19,7 @@
   };
 </script>
 
-<div class="input-container relative flex min-w-56 flex-col gap-1">
+<div class="input-container relative flex min-w-56 flex-col gap-1 {disabled ? 'opacity-75' : ''}">
   <label for={id} class="text-xs opacity-45 {labelClass}">
     <slot />
     {required ? '*' : ''}

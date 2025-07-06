@@ -1,6 +1,11 @@
 package mk.ukim.finki.dnick.hosting.model.domain
 
-import java.util.UUID
+import java.util.*
+
+data class BaseNamespace(
+    val id: UUID = UUID.randomUUID(),
+    val name: String,
+)
 
 data class Namespace(
     val id: UUID = UUID.randomUUID(),

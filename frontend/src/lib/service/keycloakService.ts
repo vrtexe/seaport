@@ -14,7 +14,19 @@ const keycloakConfig: KeycloakConfig = {
   clientId: 'seaport'
 };
 
+let promise: Promise<unknown> | undefined;
+
 export const initKeycloak = async () => {
+  promise = wrapPromise(initKeycloakInternal);
+};
+
+export const awaitKeycloak = async () => {
+  if (!promise) return;
+  await promise;
+  promise = undefined;
+};
+
+const initKeycloakInternal = async () => {
   const authenticated = await setupKeycloak();
   if (!authenticated) {
     await keycloak?.login();
@@ -22,6 +34,10 @@ export const initKeycloak = async () => {
 
   user.set(loadUserFromKeycloak());
   authenticationToken = loadKeycloakToken();
+};
+
+const wrapPromise = (fn: () => Promise<unknown>) => {
+  return new Promise<unknown>(resolve => fn().then(resolve));
 };
 
 export const setupKeycloak = async () => {

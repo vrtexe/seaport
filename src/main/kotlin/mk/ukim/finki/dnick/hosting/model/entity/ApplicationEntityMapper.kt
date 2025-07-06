@@ -1,5 +1,6 @@
 package mk.ukim.finki.dnick.hosting.model.entity
 
+import mk.ukim.finki.dnick.hosting.model.domain.BaseNamespace
 import mk.ukim.finki.dnick.hosting.model.domain.Application as DomainApplication
 import mk.ukim.finki.dnick.hosting.model.domain.Deployment as DomainDeployment
 import mk.ukim.finki.dnick.hosting.model.domain.DeploymentState as DeploymentStateDomain
@@ -89,6 +90,11 @@ fun ImageTag.toDomain() = DomainImageTag(
 fun Image.toDomain() = DomainImage(
     id = this.id!!,
     name = this.name,
+)
+
+fun Namespace.toBaseDomain() = BaseNamespace(
+    id = this.id,
+    name = this.name
 )
 
 fun Namespace.toDomain() = DomainNamespace(

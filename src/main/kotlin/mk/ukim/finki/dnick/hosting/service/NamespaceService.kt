@@ -1,8 +1,10 @@
 package mk.ukim.finki.dnick.hosting.service
 
 import mk.ukim.finki.dnick.hosting.infra.config.auth.AuthenticationFacade
+import mk.ukim.finki.dnick.hosting.model.domain.BaseNamespace
 import mk.ukim.finki.dnick.hosting.model.entity.Namespace
 import mk.ukim.finki.dnick.hosting.model.entity.User
+import mk.ukim.finki.dnick.hosting.model.entity.toBaseDomain
 import mk.ukim.finki.dnick.hosting.repository.NamespaceRepository
 import mk.ukim.finki.dnick.hosting.repository.UserRepository
 import org.springframework.http.HttpStatus
@@ -21,6 +23,11 @@ class NamespaceService(
     @Transactional
     fun getUserNamespace(): String {
         return resolveUserNamespace().name
+    }
+
+    @Transactional
+    fun findUserNamespace(): BaseNamespace {
+        return resolveUserNamespace().toBaseDomain()
     }
 
     @Transactional

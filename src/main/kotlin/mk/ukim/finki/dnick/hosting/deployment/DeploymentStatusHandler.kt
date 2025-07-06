@@ -6,6 +6,8 @@ import mk.ukim.finki.dnick.hosting.model.domain.DeploymentState
 import mk.ukim.finki.dnick.hosting.repository.DeploymentRepository
 import mk.ukim.finki.dnick.hosting.service.DeploymentService
 import mk.ukim.finki.dnick.hosting.socket.DeploymentDoneEventPublisher
+import mk.ukim.finki.dnick.hosting.socket.StatusListenerAttachedEvent
+import mk.ukim.finki.dnick.hosting.socket.StatusListenerAttachedEventPublisher
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.socket.TextMessage
@@ -22,31 +24,45 @@ class DeploymentStatusHandler(
     private val deploymentCache: DeploymentCache,
     private val deploymentRepository: DeploymentRepository,
     private val deploymentDoneEventPublisher: DeploymentDoneEventPublisher,
-    private val deploymentService: DeploymentService
+    private val deploymentService: DeploymentService,
+    private val deploymentStatusCache: DeploymentStatusCache,
+    private val statusListenerAttachedEventPublisher: StatusListenerAttachedEventPublisher
 ) {
 
     @Transactional(readOnly = true)
     fun subscribe(uid: UUID, socket: WebSocketSession) {
-        deploymentCache.getDeployment(uid)
-            ?.let { addLogListener(it, socket) }
+        deploymentStatusCache.getDeployment(uid)
+            ?.let { addStatusListener(it, socket) }
             ?: deploymentService.fetchDeploymentData(uid)?.let {
                 val deployment = Deployment(uid = uid, data = it, status = it.deployment.state)
-                deploymentCache.queue(deployment)
-                addLogListener(deployment, socket)
+                deploymentStatusCache.queue(deployment)
+                addStatusListener(deployment, socket)
             }
     }
 
-    private fun addLogListener(deployment: Deployment, socket: WebSocketSession) {
-        deployment.statusListener[socket.id] = socket
-        sendStatus(deployment, socket)
+    private fun addStatusListener(deployment: Deployment, socket: WebSocketSession) {
+        deploymentStatusCache.getDeployment(deployment.uid)?.let {
+            it.statusListener[socket.id] = socket
+            sendStatus(it, socket)
+            statusListenerAttachedEventPublisher.publish(
+                StatusListenerAttachedEvent(
+                    namespace = it.data.namespace,
+                    deploymentUid = it.uid,
+                    deploymentName = it.data.deployment.name
+                )
+            )
+        }
     }
 
     fun unsubscribe(imageUid: UUID, socket: WebSocketSession) {
-        deploymentCache.getDeployment(imageUid)?.statusListener?.remove(socket.id)
+        deploymentStatusCache.getDeployment(imageUid)?.statusListener?.let {
+            it.remove(socket.id)
+            if (it.isEmpty()) deploymentStatusCache.remove(imageUid)
+        }
     }
 
-    fun updateStatus(status: DeploymentState, imageUid: UUID) {
-        deploymentCache.getDeployment(imageUid)?.let {
+    fun updateStatus(status: DeploymentState, uid: UUID) {
+        deploymentStatusCache.getDeployment(uid)?.let {
             it.status = status
             handleStatus(status, it)
             it.statusListener.values.forEach { socket ->
@@ -58,21 +74,22 @@ class DeploymentStatusHandler(
     private fun handleStatus(status: DeploymentState, build: Deployment) {
         saveStatus(status, build.uid)?.let {
             when (status) {
-                DeploymentState.STARTED -> handleBuildComplete(build)
-                DeploymentState.FAILED -> handleBuildComplete(build)
+                DeploymentState.STARTED -> handleDeploymentComplete(build)
+                DeploymentState.FAILED -> handleDeploymentComplete(build)
                 DeploymentState.STOPPED -> null
                 DeploymentState.INITIAL -> null
             }
         }
     }
 
-    private fun handleBuildComplete(data: Deployment) {
-        cleanupBuild(data.uid)
+    private fun handleDeploymentComplete(data: Deployment) {
+        cleanup(data.uid)
         deploymentDoneEventPublisher.publish()
     }
 
-    private fun cleanupBuild(imageUid: UUID) {
-        deploymentCache.removeBuild(imageUid)
+    private fun cleanup(uid: UUID) {
+        deploymentCache.remove(uid)
+        deploymentStatusCache.remove(uid)
     }
 
     private fun saveStatus(

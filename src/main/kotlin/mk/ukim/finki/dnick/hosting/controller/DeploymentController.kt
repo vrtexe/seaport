@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*
 import mk.ukim.finki.dnick.hosting.generated.model.DeploymentService as ModelDeploymentService
 
 @RestController
-@CrossOrigin(origins = ["*"])
 @RequestMapping("/api/v2/deployments")
 class DeploymentController(
     private val deploymentService: DeploymentService,

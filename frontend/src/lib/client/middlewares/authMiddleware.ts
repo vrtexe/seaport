@@ -1,9 +1,10 @@
 import type { Middleware, ResponseContext } from '$lib/generated';
 import { Header } from '$lib/model/header';
-import { getAuthenticationToken } from '$lib/service/keycloakService';
+import { awaitKeycloak, getAuthenticationToken } from '$lib/service/keycloakService';
 
 export const authenticationMiddleware = (): Middleware => ({
   async pre(context: ResponseContext) {
+    await awaitKeycloak();
     return {
       ...context,
       init: {
@@ -12,7 +13,7 @@ export const authenticationMiddleware = (): Middleware => ({
           ...context.init.headers,
           [Header.Authorization]: buildBearerToken()
         }
-      },
+      }
     };
   }
 });
