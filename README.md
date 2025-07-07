@@ -53,6 +53,7 @@ Main parts
 - [Kind](https://kind.sigs.k8s.io/)
 - [Postgres](https://www.postgresql.org/)
 - [Registry](https://hub.docker.com/_/registry)
+- [Keycloak](https://www.keycloak.org/)
 
 ### Local registry
 

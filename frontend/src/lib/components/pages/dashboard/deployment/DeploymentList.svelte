@@ -78,7 +78,9 @@
           {#each deployments.data as deployment}
             <tr>
               <td><DeploymentBuildStatus {deployment} /></td>
-              <td>{deployment.name}</td>
+              <td>
+                <span class="text-nowrap">{deployment.name}</span>
+              </td>
               <td>
                 <span class="text-nowrap">
                   <PrimaryLinkButton>
@@ -93,12 +95,15 @@
               </td>
               <td>{deployment.image.tag.version}</td>
               <td>
-                http://{deployment.service.name}{deployment.service.port !== 80 ? `:${deployment.service.port}` : ''}
+                <span class="text-nowrap">
+                  http://{deployment.service.name}{deployment.service.port !== 80 ? `:${deployment.service.port}` : ''}
+                </span>
               </td>
               <td>
                 {#if deployment.ingress}
                   <PrimaryLinkButton
-                    href="{deployment.cluster.url}/{deployment.cluster.namespace}/{deployment.ingress.path}">
+                    href="{deployment.cluster.url}/{deployment.cluster.namespace}/{deployment.ingress.path}"
+                    target="_blank">
                     <Link class="inline-block" height="1.5em" width="1.5em" />
                   </PrimaryLinkButton>
                 {/if}
