@@ -2,7 +2,7 @@ package mk.ukim.finki.dnick.hosting.service
 
 import mk.ukim.finki.dnick.hosting.model.entity.BaseImageType
 
-data class BaseImageRequest(
+data class BaseImageArgumentRequest(
     val type: BaseImageType,
     val language: String,
     val languageVersion: String?,

@@ -30,7 +30,8 @@
   function initWebsocket(uid: string) {
     websocket?.close();
     websocket = connectDeploymentLogWebSocket({ uid: uid }, response => {
-      log.data = [log.data.trim(), response.data.trim()].filter(s => s).join('\n');
+      console.log(response.data)
+      log.data = [log.data, response.data].filter(s => s).join('\n');
     });
   }
 
@@ -47,10 +48,10 @@
     <div class="flex min-w-[60rem] max-w-[90rem] flex-col-reverse">
       {#if lines.length}
         {#each lines as line, i}
-          <div class="flex gap-x-2">
+          <div class="flex gap-x-6 font-mono">
             <span class="flex w-4 select-none items-center text-sm font-bold opacity-25">{lines.length - i}</span>
             <span>
-              <AnsiTexts values={parseAnsi(line)} />
+                <pre><AnsiTexts values={parseAnsi(line)} /></pre>
             </span>
           </div>
         {/each}

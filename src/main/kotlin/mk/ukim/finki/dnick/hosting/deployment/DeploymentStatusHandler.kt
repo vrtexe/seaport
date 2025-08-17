@@ -37,6 +37,13 @@ class DeploymentStatusHandler(
                 val deployment = Deployment(uid = uid, data = it, status = it.deployment.state)
                 deploymentStatusCache.queue(deployment)
                 addStatusListener(deployment, socket)
+                statusListenerAttachedEventPublisher.publish(
+                    StatusListenerAttachedEvent(
+                        namespace = deployment.data.namespace,
+                        deploymentUid = deployment.uid,
+                        deploymentName = deployment.data.deployment.name
+                    )
+                )
             }
     }
 
@@ -44,20 +51,13 @@ class DeploymentStatusHandler(
         deploymentStatusCache.getDeployment(deployment.uid)?.let {
             it.statusListener[socket.id] = socket
             sendStatus(it, socket)
-            statusListenerAttachedEventPublisher.publish(
-                StatusListenerAttachedEvent(
-                    namespace = it.data.namespace,
-                    deploymentUid = it.uid,
-                    deploymentName = it.data.deployment.name
-                )
-            )
         }
     }
 
-    fun unsubscribe(imageUid: UUID, socket: WebSocketSession) {
-        deploymentStatusCache.getDeployment(imageUid)?.statusListener?.let {
+    fun unsubscribe(uid: UUID, socket: WebSocketSession) {
+        deploymentStatusCache.getDeployment(uid)?.statusListener?.let {
             it.remove(socket.id)
-            if (it.isEmpty()) deploymentStatusCache.remove(imageUid)
+            if (it.isEmpty()) deploymentStatusCache.remove(uid)
         }
     }
 
@@ -89,7 +89,9 @@ class DeploymentStatusHandler(
 
     private fun cleanup(uid: UUID) {
         deploymentCache.remove(uid)
-        deploymentStatusCache.remove(uid)
+        deploymentStatusCache.getDeployment(uid)?.let {
+            if (it.statusListener.isEmpty()) deploymentStatusCache.remove(uid)
+        }
     }
 
     private fun saveStatus(
@@ -98,7 +100,7 @@ class DeploymentStatusHandler(
     ): DeploymentEntity? {
         return deploymentRepository.findByUid(uid)?.let {
             it.state = DeploymentStateEntity.valueOf(status.name.lowercase())
-            deploymentRepository.save(it)
+            deploymentRepository.saveAndFlush(it)
         }
 
     }

@@ -94,6 +94,7 @@ const loadUserFromKeycloak = (): User | undefined => {
   const idTokenParsed = keycloak.idTokenParsed as KeycloakTokenParsed;
   const tokenParsed = keycloak.tokenParsed;
 
+  console.log(idTokenParsed)
   return {
     id: keycloak.subject ? keycloak.subject : '',
     email: idTokenParsed.email,

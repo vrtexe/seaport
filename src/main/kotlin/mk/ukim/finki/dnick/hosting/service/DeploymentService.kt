@@ -1,10 +1,12 @@
 package mk.ukim.finki.dnick.hosting.service
 
+import mk.ukim.finki.dnick.hosting.controller.DeploymentCriteria
 import mk.ukim.finki.dnick.hosting.deployment.DeploymentQueue
 import mk.ukim.finki.dnick.hosting.generated.model.DeploymentCreateRequest
 import mk.ukim.finki.dnick.hosting.generated.model.DeploymentCreateRequestDeployment
 import mk.ukim.finki.dnick.hosting.generated.model.DeploymentCreateRequestIngress
 import mk.ukim.finki.dnick.hosting.generated.model.DeploymentCreateRequestService
+import mk.ukim.finki.dnick.hosting.model.domain.DeploymentState.*
 import mk.ukim.finki.dnick.hosting.model.domain.PartialDeployment
 import mk.ukim.finki.dnick.hosting.model.entity.*
 import mk.ukim.finki.dnick.hosting.model.entity.Deployment
@@ -45,9 +47,42 @@ class DeploymentService(
     }
 
     @Transactional
-    fun getDeployments(pageable: Pageable): Page<Deployment> {
-        return deploymentRepository.findAllByNamespace(namespaceService.getUserNamespace(), pageable)
+    fun getDeployments(criteria: DeploymentCriteria, pageable: Pageable): Page<Deployment> {
+        return deploymentRepository.findAllByNamespace(criteria.group, namespaceService.getUserNamespace(), pageable)
     }
+
+    @Transactional
+    fun getDeployment(id: Int): Deployment {
+        return deploymentRepository.findBy(id, namespaceService.getUserNamespace())
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Deployment not found with id: $id")
+    }
+
+    @Transactional
+    fun setDeploymentState(id: Int, state: DeploymentStateDomain) {
+        val deployment = deploymentRepository.findByIdOrNull(id) ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Deployment with id: $id not found"
+        )
+
+        val deploymentData = PartialDeployment(
+            namespace = deployment.application.namespace.name,
+            deployment = deployment.toDomain().copy(state = state),
+            service = deployment.getDeploymentService().toDomain(),
+            ingress = deployment.getDeploymentIngress()?.toDomain(),
+        )
+
+        when (state) {
+            INITIAL -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state")
+            STARTED -> deliveryService.startDeployment(deploymentData)
+            STOPPED -> deliveryService.stopDeployment(deploymentData)
+            FAILED -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state")
+        }
+
+        deployment.state = state.toEntity()
+        deploymentRepository.save(deployment)
+    }
+
+    fun DeploymentStateDomain.toEntity() = DeploymentState.valueOf(this.value.lowercase())
 
     @Transactional
     fun createDeployment(request: DeploymentCreateRequest) {
@@ -181,7 +216,7 @@ class DeploymentService(
 
         val deployment = deploymentRepository.findByIdOrNull(id) ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND,
-            "Deployment with id: ${id} not found"
+            "Deployment with id: $id not found"
         )
 
         val application = applicationRepository.findByIdOrNull(request.groupId) ?: throw ResponseStatusException(
@@ -275,7 +310,7 @@ class DeploymentService(
 
         }
 
-        deploymentRepository.save(deployment)
+        deploymentRepository.saveAndFlush(deployment)
 
         return ResourceChanges(
             namespace = namespaceService.getUserNamespace(),

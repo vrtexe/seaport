@@ -1,0 +1,8 @@
+resources:
+  - namespace.yaml
+  - deploy.yaml
+  - ingress.yaml
+  - service.yaml
+  - ext-webdav-service.yaml
+  - ext-database-service.yaml
+  - ext-nginx-service.yaml

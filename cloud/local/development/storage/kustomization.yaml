@@ -1,5 +1,6 @@
 resources:
   - persistent-volume.yaml
+  - persistent-volume-build.yaml
   - persistent-volume-database.yaml
   - persistent-volume-webdav.yaml
   - persistent-volume-registry.yaml

@@ -6,3 +6,4 @@ resources:
   - database
   - sso
   - app
+  - nginx

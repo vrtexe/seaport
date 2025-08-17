@@ -13,4 +13,8 @@ export interface User {
   username: string;
 }
 
+export function isAdmin(user: User) {
+  return user.userRoles.includes(UserRole.ADMIN);
+}
+
 export const DEFAULT_USER_ROLES: UserRole[] = [];

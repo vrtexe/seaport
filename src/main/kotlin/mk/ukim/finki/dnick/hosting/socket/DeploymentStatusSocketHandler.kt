@@ -35,8 +35,8 @@ class DeploymentStatusSocketHandler(
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
         socketSessions.remove(session.id)?.let {
-            for (imageUid in it) {
-                deploymentStatusHandler.unsubscribe(imageUid, session)
+            for (uid in it) {
+                deploymentStatusHandler.unsubscribe(uid, session)
             }
         }
     }

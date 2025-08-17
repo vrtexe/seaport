@@ -3,6 +3,7 @@ package mk.ukim.finki.dnick.hosting.controller
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import mk.ukim.finki.dnick.hosting.generated.model.*
+import mk.ukim.finki.dnick.hosting.generated.model.BaseImage
 import mk.ukim.finki.dnick.hosting.image.*
 import mk.ukim.finki.dnick.hosting.infra.config.UserProperties
 import mk.ukim.finki.dnick.hosting.infra.config.auth.AuthenticationFacade
@@ -22,7 +23,6 @@ import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.util.UriComponentsBuilder
 import java.time.ZoneId
 import java.util.*
-import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Private
 import mk.ukim.finki.dnick.hosting.generated.model.BaseImageType.Companion as BaseImageTypeDto
 import mk.ukim.finki.dnick.hosting.generated.model.Image as ImageDto
 import mk.ukim.finki.dnick.hosting.generated.model.ImageLog as ImageLogDto
@@ -189,7 +189,7 @@ class ImageController(
         base = this.base.toDetailsDto()
     )
 
-    fun BaseImageRef.toDetailsDto() = ImageTagDetailsBase(
+    fun BaseImageRef.toDetailsDto() = BaseImage(
         id = this.id!!,
         type = this.type.toDetailsDto(),
         language = when (this.type) {
@@ -201,13 +201,13 @@ class ImageController(
             BaseImageType.EXE -> this.baseImageExe?.base?.version ?: ""
         },
         git = this.baseImageGit?.let {
-            ImageTagDetailsBaseGit(
+            BaseImageRequestGit(
                 buildTool = it.buildTool,
                 buildToolVersion = it.version
             )
         },
         arguments = this.arguments.map {
-            ImageTagDetailsBaseArgument(
+            BaseImageArgument(
                 name = it.name,
                 description = it.description,
                 type = it.type.toDetailsDto(),

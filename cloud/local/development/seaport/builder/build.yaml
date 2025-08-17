@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kaniko-builder-seaport-job
+  namespace: registry-internal
+spec:
+  template:
+    metadata:
+      name: kaniko-builder-seaport
+      labels:
+        app: seaport-image-builder
+        image: seaport-app
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: kaniko
+          image: gcr.io/kaniko-project/executor
+          args:
+            - "--dockerfile=/workspace/workdir/ContainerFile"
+            - "--destination=10.96.101.236/seaport:1.0.1"
+            - "--ignore-path=/product_uuid"
+            - "--insecure"
+            - "--build-arg=BASE_JAR_DIR=/workdir"
+          volumeMounts:
+            - name: build-source-volume
+              mountPath: /workspace/workdir
+      volumes:
+        - name: build-source-volume
+          persistentVolumeClaim:
+            claimName: build-source-pvc

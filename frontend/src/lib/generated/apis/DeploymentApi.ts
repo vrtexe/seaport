@@ -16,11 +16,17 @@
 import * as runtime from '../runtime';
 import type {
   DeploymentCreateRequest,
+  DeploymentDetails,
+  DeploymentState,
   DeploymentsResponse,
 } from '../models/index';
 import {
     DeploymentCreateRequestFromJSON,
     DeploymentCreateRequestToJSON,
+    DeploymentDetailsFromJSON,
+    DeploymentDetailsToJSON,
+    DeploymentStateFromJSON,
+    DeploymentStateToJSON,
     DeploymentsResponseFromJSON,
     DeploymentsResponseToJSON,
 } from '../models/index';
@@ -33,6 +39,17 @@ export interface DeleteDeploymentRequest {
     id: number;
 }
 
+export interface GetDeploymentRequest {
+    id: number;
+}
+
+export interface GetDeploymentsRequest {
+    page?: number;
+    size?: number;
+    sort?: Array<string>;
+    group?: string;
+}
+
 export interface TriggerDeploymentLogsRequest {
     uid: string;
 }
@@ -40,6 +57,11 @@ export interface TriggerDeploymentLogsRequest {
 export interface UpdateDeploymentRequest {
     id: number;
     deploymentCreateRequest: DeploymentCreateRequest;
+}
+
+export interface UpdateDeploymentStateRequest {
+    id: number;
+    body: string;
 }
 
 /**
@@ -115,9 +137,58 @@ export class DeploymentApi extends runtime.BaseAPI {
     }
 
     /**
+     * get a deployment
      */
-    async getDeploymentsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeploymentsResponse>> {
+    async getDeploymentRaw(requestParameters: GetDeploymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeploymentDetails>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getDeployment().'
+            );
+        }
+
         const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/v2/deployments/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => DeploymentDetailsFromJSON(jsonValue));
+    }
+
+    /**
+     * get a deployment
+     */
+    async getDeployment(requestParameters: GetDeploymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeploymentDetails> {
+        const response = await this.getDeploymentRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getDeploymentsRaw(requestParameters: GetDeploymentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeploymentsResponse>> {
+        const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['size'] != null) {
+            queryParameters['size'] = requestParameters['size'];
+        }
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['sort'] = requestParameters['sort'];
+        }
+
+        if (requestParameters['group'] != null) {
+            queryParameters['group'] = requestParameters['group'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -133,8 +204,8 @@ export class DeploymentApi extends runtime.BaseAPI {
 
     /**
      */
-    async getDeployments(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeploymentsResponse> {
-        const response = await this.getDeploymentsRaw(initOverrides);
+    async getDeployments(requestParameters: GetDeploymentsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeploymentsResponse> {
+        const response = await this.getDeploymentsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -208,6 +279,48 @@ export class DeploymentApi extends runtime.BaseAPI {
      */
     async updateDeployment(requestParameters: UpdateDeploymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.updateDeploymentRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Update a deployment state
+     */
+    async updateDeploymentStateRaw(requestParameters: UpdateDeploymentStateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling updateDeploymentState().'
+            );
+        }
+
+        if (requestParameters['body'] == null) {
+            throw new runtime.RequiredError(
+                'body',
+                'Required parameter "body" was null or undefined when calling updateDeploymentState().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/v2/deployments/{id}/state`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters['body'] as any,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Update a deployment state
+     */
+    async updateDeploymentState(requestParameters: UpdateDeploymentStateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.updateDeploymentStateRaw(requestParameters, initOverrides);
     }
 
 }

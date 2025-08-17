@@ -27,6 +27,210 @@ paths:
               schema:
                 $ref: '#/components/schemas/Namespace'
 
+  /v2/base-image:
+    get:
+      tags: [ base-image ]
+      operationId: getBaseImages
+      x-spring-paginated: true
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - in: query
+          required: false
+          name: type
+          schema:
+            $ref: '#/components/schemas/BaseImageType'
+        - in: query
+          required: false
+          name: language
+          schema:
+            type: string
+        - in: query
+          required: false
+          name: buildTool
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseImageResponse'
+    post:
+      tags: [ base-image ]
+      operationId: createBaseImages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseImageRequest'
+      responses:
+        201:
+          description: Created
+  /v2/base-image/{id}:
+    get:
+      tags: [ base-image ]
+      operationId: getBaseImage
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseImageDetails'
+    patch:
+      tags: [ base-image ]
+      operationId: updateBaseImages
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseImageRequest'
+      responses:
+        201:
+          description: Created
+    delete:
+      tags: [ base-image ]
+      operationId: deleteBaseImages
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        201:
+          description: Created
+
+  /v2/base-image/languages:
+    get:
+      tags: [ base-image ]
+      operationId: getBaseImageLanguages
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /v2/base-image/language/{name}/versions:
+    get:
+      tags: [ base-image ]
+      operationId: getBaseImageLanguageVersions
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /v2/base-image/build-tools:
+    get:
+      tags: [ base-image ]
+      operationId: getBaseImageBuildTools
+      parameters:
+        - in: query
+          name: language
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: version
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /v2/base-image/build-tool/{name}/versions:
+    get:
+      tags: [ base-image ]
+      operationId: getBaseImageBuildToolVersions
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /v2/base-image/build-arguments:
+    get:
+      tags: [ base-image ]
+      operationId: getBaseImageBuildArguments
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema:
+            $ref: '#/components/schemas/BaseImageType'
+        - in: query
+          name: language
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: languageVersion
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: buildTool.name
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: buildTool.version
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BaseImageArgument'
+
   /v2/images:
     get:
       tags: [ image ]
@@ -127,7 +331,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ImageLog'
           description: ok
-  #  /v2/deployment:
   /v2/groups:
     get:
       tags: [ group ]
@@ -163,16 +366,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Group'
   /v2/groups/{id}:
-    #    get:
-    #      tags: [ group ]
-    #      operationId: getGroup
-    #      description: Get details for a group
-    #      parameters:
-    #        - in: path
-    #          name: id
-    #          required: true
-    #          schema:
-    #            type: integer
     delete:
       tags: [ group ]
       operationId: deleteGroup
@@ -228,11 +421,20 @@ paths:
         204:
           description: No content
 
-
   /v2/deployments:
     get:
       tags: [ deployment ]
       operationId: getDeployments
+      x-spring-paginated: true
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - in: query
+          name: group
+          required: false
+          schema:
+            type: string
       responses:
         200:
           description: ok
@@ -254,6 +456,23 @@ paths:
         200:
           description: ok
   /v2/deployments/{id}:
+    get:
+      tags: [ deployment ]
+      operationId: getDeployment
+      description: get a deployment
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentDetails'
     delete:
       tags: [ deployment ]
       operationId: deleteDeployment
@@ -290,6 +509,93 @@ paths:
           description: ok
         404:
           description: Not found
+  /v2/deployments/{id}/state:
+    patch:
+      tags: [ deployment ]
+      operationId: updateDeploymentState
+      description: Update a deployment state
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeploymentState'
+      responses:
+        204:
+          description: No content
+        404:
+          description: Not found
+
+  /v2/documentation:
+    get:
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        text:
+                          type: string
+  #    post:
+  #      requestBody:
+  #        content:
+  #          application/json:
+  #            schema:
+  #              type: object
+  #              required: [ pages ]
+  #              properties:
+  #                pages:
+  #                  type: array
+  #                  items:
+  #                    type: object
+  #                    properties:
+  #                      name:
+  #                        type: string
+  #                      order:
+  #                        type: integer
+  #                      text:
+  #                        type: string
+#  /v2/documentation/{id}:
+#    put:
+#      parameters:
+#        - in: path
+#          name: id
+#          required: true
+#          schema:
+#            type: string
+#      requestBody:
+#        content:
+#          application/json:
+#            schema:
+#              type: object
+#              required: [ pages ]
+#              properties:
+#                pages:
+#                  type: array
+#                  items:
+#                    type: object
+#                    properties:
+#                      name:
+#                        type: string
+#                      order:
+#                        type: integer
+#                      text:
+#                        type: string
 
 components:
   parameters:
@@ -364,6 +670,44 @@ components:
             $ref: '#/components/schemas/Deployment'
         metadata:
           $ref: '#/components/schemas/ResponseMetadata'
+    DeploymentDetails:
+      type: object
+      required: [ id, uid, general, service, environment, group, imageTag ]
+      properties:
+        id:
+          type: integer
+        uid:
+          type: string
+        general:
+          type: object
+          required: [ name, port ]
+          properties:
+            name:
+              type: string
+            port:
+              type: integer
+        ingress:
+          type: object
+          required: [ name, path ]
+          properties:
+            name:
+              type: string
+            path:
+              type: string
+        service:
+          type: object
+          required: [ name ]
+          properties:
+            name:
+              type: string
+        group:
+          $ref: '#/components/schemas/Group'
+        imageTag:
+          $ref: '#/components/schemas/ImageTag'
+        environment:
+          type: object
+          additionalProperties:
+            type: string
     Deployment:
       type: object
       required: [ id, uid, name, image, cluster, service ]
@@ -492,6 +836,16 @@ components:
             $ref: '#/components/schemas/Image'
         metadata:
           $ref: '#/components/schemas/ResponseMetadata'
+    BaseImageResponse:
+      type: object
+      required: [ data, metadata ]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseImage'
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
     Image:
       type: object
       required: [ id, name, releases ]
@@ -554,15 +908,77 @@ components:
               type: object
               additionalProperties: true
             base:
-              $ref: '#/components/schemas/ImageTagDetailsBase'
+              $ref: '#/components/schemas/BaseImage'
     BaseImageType:
       type: string
       enum:
         - GIT
         - EXE
-    ImageTagDetailsBase:
+    BaseImageRequest:
       type: object
-      required: [ id, type, arguments, language, version ]
+      required: [ value, type, arguments ]
+      properties:
+        baseImageId:
+          type: integer
+        baseImage:
+          type: object
+          required: [ language, version ]
+          properties:
+            language:
+              type: string
+            version:
+              type: string
+        type:
+          $ref: '#/components/schemas/BaseImageType'
+        value:
+          type: string
+        git:
+          type: object
+          required: [ buildTool, buildToolVersion ]
+          properties:
+            buildTool:
+              type: string
+            buildToolVersion:
+              type: string
+        exe:
+          type: object
+          required: [ fileType ]
+          properties:
+            fileType:
+              type: string
+        arguments:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseImageArgument'
+    BaseImageUpdateRequest:
+      type: object
+      required: [ value, type, arguments ]
+      properties:
+        type:
+          $ref: '#/components/schemas/BaseImageType'
+        value:
+          type: string
+        git:
+          type: object
+          required: [ buildTool, buildToolVersion ]
+          properties:
+            buildTool:
+              type: string
+            buildToolVersion:
+              type: string
+        exe:
+          type: object
+          required: [ fileType ]
+          properties:
+            fileType:
+              type: string
+        arguments:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseImageArgument'
+    BaseImage:
+      type: object
+      required: [ id, type, arguments, language ]
       properties:
         id:
           type: integer
@@ -583,8 +999,16 @@ components:
         arguments:
           type: array
           items:
-            $ref: '#/components/schemas/ImageTagDetailsBaseArgument'
-    ImageTagDetailsBaseArgument:
+            $ref: '#/components/schemas/BaseImageArgument'
+    BaseImageDetails:
+      type: object
+      required: [ base, value ]
+      properties:
+        base:
+          $ref: '#/components/schemas/BaseImage'
+        value:
+          type: string
+    BaseImageArgument:
       type: object
       required: [ name, description, type, stage ]
       properties:

@@ -76,7 +76,7 @@
                 </div>
               </td>
               <td>
-                <PrimaryLinkButton href="/application/details/{group.id}">
+                <PrimaryLinkButton href="/deployment?group={group.name}">
                   <InformationOutline class="inline-block" height="1.75em" width="1.75em" />
                 </PrimaryLinkButton>
               </td>

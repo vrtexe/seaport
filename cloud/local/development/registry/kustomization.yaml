@@ -3,5 +3,6 @@ resources:
   - persistent-volume-claim.yaml
   - secret.yaml
   - service.yaml
+  - ingress.yaml
   - deploy.yaml
   - webdav-service.yaml

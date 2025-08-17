@@ -18,7 +18,7 @@ class GroupService(
     private val namespaceService: NamespaceService,
 ) {
 
-    @Transactional(readOnly = true)
+    @Transactional
     fun getGroups(pageable: Pageable): Page<Application> {
         return applicationRepository.findAllByNamespace(
             namespaceService.getUserNamespace(),

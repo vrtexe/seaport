@@ -39,10 +39,9 @@ class DeploymentStatusWatcher(
     }
 
     fun watchStatus(event: StatusWatcherData): Boolean {
-        log.info { "Waiting for deployment build: ${event.deploymentName}" }
+        log.info { "Watching status deployment: ${event.deploymentName}" }
         return Watch.createWatch<V1Pod>(
-            client,
-            coreV1Api.listNamespacedPod(event.namespace)
+            client, coreV1Api.listNamespacedPod(event.namespace)
                 .watch(true)
                 .labelSelector(selectorOf(APP_LABEL to event.deploymentName))
                 .buildCall(null),
@@ -57,9 +56,10 @@ class DeploymentStatusWatcher(
             val pod = response.`object`
 
             val status = getPodStatus(pod)
+            log.info { "Deployment status updated: ${event.deploymentName} (status: $status)" }
+
             if (status != null) {
                 deploymentStatusHandler.updateStatus(status, event.deploymentUid)
-                return true
             }
         }
 
@@ -69,8 +69,8 @@ class DeploymentStatusWatcher(
     private fun getPodStatus(podStatus: V1Pod): DeploymentState? {
         return podStatus.getTerminatedStatus()?.let {
             when (it) {
-                CompletedReason -> DeploymentState.STARTED
-                ErrorReason -> DeploymentState.FAILED
+                CompletedReason -> DeploymentState.STOPPED
+                ErrorReason -> DeploymentState.STOPPED
                 else -> null
             }
         } ?: podStatus.isReady().let { if (it) DeploymentState.STARTED else null }

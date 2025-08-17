@@ -20,13 +20,13 @@ import {
     ImageTagStatusToJSON,
     ImageTagStatusToJSONTyped,
 } from './ImageTagStatus';
-import type { ImageTagDetailsBase } from './ImageTagDetailsBase';
+import type { BaseImage } from './BaseImage';
 import {
-    ImageTagDetailsBaseFromJSON,
-    ImageTagDetailsBaseFromJSONTyped,
-    ImageTagDetailsBaseToJSON,
-    ImageTagDetailsBaseToJSONTyped,
-} from './ImageTagDetailsBase';
+    BaseImageFromJSON,
+    BaseImageFromJSONTyped,
+    BaseImageToJSON,
+    BaseImageToJSONTyped,
+} from './BaseImage';
 
 /**
  * 
@@ -72,10 +72,10 @@ export interface ImageTagDetails {
     arguments: { [key: string]: any; };
     /**
      * 
-     * @type {ImageTagDetailsBase}
+     * @type {BaseImage}
      * @memberof ImageTagDetails
      */
-    base: ImageTagDetailsBase;
+    base: BaseImage;
 }
 
 
@@ -110,7 +110,7 @@ export function ImageTagDetailsFromJSONTyped(json: any, ignoreDiscriminator: boo
         'created': (new Date(json['created'])),
         'status': ImageTagStatusFromJSON(json['status']),
         'arguments': json['arguments'],
-        'base': ImageTagDetailsBaseFromJSON(json['base']),
+        'base': BaseImageFromJSON(json['base']),
     };
 }
 
@@ -131,7 +131,7 @@ export function ImageTagDetailsToJSONTyped(value?: ImageTagDetails | null, ignor
         'created': ((value['created']).toISOString()),
         'status': ImageTagStatusToJSON(value['status']),
         'arguments': value['arguments'],
-        'base': ImageTagDetailsBaseToJSON(value['base']),
+        'base': BaseImageToJSON(value['base']),
     };
 }
 

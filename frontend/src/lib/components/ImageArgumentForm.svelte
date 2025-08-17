@@ -1,6 +1,7 @@
 <script lang="ts">
   import FileInput from '$lib/components/FileInput.svelte';
   import InputHorizontal from '$lib/components/InputHorizontal.svelte';
+  import type { BaseImageArgument } from '$lib/generated';
   import { fetchImageArgs } from '$lib/service/baseImageService';
   import { BuildArgStage, BuildArgType, ImageType, type BuildArg } from '$lib/types/baseImage';
   import type { Image } from '$lib/types/baseImageRequest';

@@ -4,7 +4,6 @@ import mk.ukim.finki.dnick.hosting.model.dto.NamespaceDto
 import mk.ukim.finki.dnick.hosting.model.dto.toDto
 import mk.ukim.finki.dnick.hosting.service.ApplicationDeploymentService
 import mk.ukim.finki.dnick.hosting.service.ApplicationPersistenceService
-import mk.ukim.finki.dnick.hosting.service.BaseImageService
 import mk.ukim.finki.dnick.hosting.service.PipelineService
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -24,15 +23,6 @@ class ApplicationController(
             .let { n ->
                 n.toDto(
                     setOf()
-//                    baseImageService.findBaseImages(
-//
-////                        n.applications.flatMap { a -> a.images.map { i -> i.baseRef } }.toSet()
-//                    ).mapNotNull {
-//                        when (it.type) {
-//                            BaseImageType.GIT -> it.baseImageGit?.toDomain()?.toDto()
-//                            BaseImageType.EXE -> it.baseImageExe?.toDomain()?.toDto()
-//                        }
-//                    }.toSet()
                 )
             }
     }

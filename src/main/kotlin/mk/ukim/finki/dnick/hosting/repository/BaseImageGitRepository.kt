@@ -1,5 +1,6 @@
 package mk.ukim.finki.dnick.hosting.repository
 
+import mk.ukim.finki.dnick.hosting.model.entity.BaseImage
 import mk.ukim.finki.dnick.hosting.model.entity.BaseImageGit
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query

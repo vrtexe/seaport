@@ -3,13 +3,15 @@
   export const Page = Object.freeze({
     Documentation: '/(dashboard)/documentation',
     Explore: '/(dashboard)/explore',
-    Dashboard: '/(dashboard)'
+    Dashboard: '/(dashboard)',
+    Admin: '/admin'
   } as const);
 
   const Route: Record<Page, string> = {
     [Page.Dashboard]: '/',
     [Page.Explore]: '/explore',
-    [Page.Documentation]: '/documentation'
+    [Page.Documentation]: '/documentation',
+    [Page.Admin]: '/admin'
   };
 
   export const PageValues: Page[] = Object.values(Page);
@@ -22,6 +24,7 @@
   import SpLine from '$lib/assets/SPLine.svelte';
   import { onMount } from 'svelte';
   import { initKeycloak, login, logout, register, user } from '$lib/service/keycloakService';
+  import { isAdmin } from '$lib/model/user';
 
   let header: HTMLElement | undefined;
   let headerHeight: number | undefined;
@@ -56,6 +59,13 @@
           <span>Dashboard</span>
         </a>
       </li>
+      {#if $user && isAdmin($user)}
+        <li>
+          <a class="inline-block px-2 py-4" href={Route[Page.Admin]} class:active={activePage === Page.Admin}>
+            <span>Admin</span>
+          </a>
+        </li>
+      {/if}
       <!-- <li>
         <a class="inline-block px-2 py-4" href="/explore" class:active={$page.route?.id === '/explore'}>
           <span>Explore</span>

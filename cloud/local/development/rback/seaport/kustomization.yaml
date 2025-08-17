@@ -1,0 +1,4 @@
+namespace: seaport
+resources:
+  - role-binding.yaml
+  - serviceaccount.yaml

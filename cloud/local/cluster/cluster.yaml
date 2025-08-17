@@ -19,8 +19,8 @@ nodes:
     extraMounts:
       - hostPath: /Users/vatrajko/Projects/school/hosting
         containerPath: /var/data/source
-#      - hostPath: /Users/vatrajko/Projects/school/hosting/cloud/local/data/database
-#        containerPath: /var/data/database
+      - hostPath: /Users/vatrajko/Projects/school/hosting/cloud/local/data/database
+        containerPath: /var/data/database
       - hostPath: /Users/vatrajko/Projects/school/hosting/cloud/local/data/internal-registry
         containerPath: /var/data/registry
       - hostPath: /Users/vatrajko/Projects/school/hosting/cloud/local/data/webdav

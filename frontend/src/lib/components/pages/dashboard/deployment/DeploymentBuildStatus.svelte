@@ -4,9 +4,13 @@
   import CheckCircleOutline from 'svelte-material-icons/CheckCircleOutline.svelte';
   import AlertCircleOutline from 'svelte-material-icons/AlertCircleOutline.svelte';
   import InformationOutline from 'svelte-material-icons/InformationOutline.svelte';
-  import { onDestroy } from 'svelte';
+  import { createEventDispatcher, onDestroy } from 'svelte';
   import Loader from '$lib/components/Loader.svelte';
   import { connectDeploymentStatusWebSocket } from '$lib/service/deploymentWebSocketService';
+
+  const dispatch = createEventDispatcher<{
+    change: DeploymentState;
+  }>();
 
   export let deployment: Deployment;
 
@@ -22,10 +26,11 @@
 
   onDestroy(() => {
     websocket?.close();
+    websocket = undefined;
   });
 
   $: initWebsocket(deployment);
-  $: console.log(status);
+  $: status && dispatch('change', status);
 </script>
 
 {#if status == undefined}

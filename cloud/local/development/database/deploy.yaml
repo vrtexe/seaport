@@ -14,6 +14,9 @@ spec:
       labels:
         app: database
     spec:
+      securityContext:
+        runAsUser: 1763188194 # machine user id
+        fsGroup: 70
       containers:
         - name: database-container
           image: postgres:16.3-alpine3.20
@@ -22,7 +25,7 @@ spec:
               containerPort: 5433
           env:
             - name: PGDATA
-              value: '/var/lib/postgresql/data/pg'
+              value: '/var/lib/postgresql/db/data'
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -35,11 +38,15 @@ spec:
                   name: database-secret
             - name: POSTGRES_DB
               value: seaport_app
-#          volumeMounts:
-#            - mountPath: "/var/lib/postgresql/data"
-#              name: pg-data
-#              readOnly: false
-#      volumes:
-#        - name: pg-data
-#          persistentVolumeClaim:
-#            claimName: database-data-claim
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/db"
+              name: pg-data
+            - mountPath: "docker-entrypoint-initdb.d"
+              name: pg-data
+              subPath: "scripts"
+
+      volumes:
+        - name: pg-data
+          persistentVolumeClaim:
+            claimName: database-data-pvc
+

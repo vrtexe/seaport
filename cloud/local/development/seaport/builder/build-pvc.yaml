@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: build-source-pvc
+  namespace: registry-internal
+spec:
+  storageClassName: manual
+  volumeName: build-data
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi

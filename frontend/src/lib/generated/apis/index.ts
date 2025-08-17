@@ -1,5 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './BaseImageApi';
+export * from './DefaultApi';
 export * from './DeploymentApi';
 export * from './GroupApi';
 export * from './ImageApi';

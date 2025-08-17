@@ -20,17 +20,17 @@ class NamespaceService(
     private val userRepository: UserRepository
 ) {
 
-    @Transactional
+    @Transactional(readOnly = false)
     fun getUserNamespace(): String {
         return resolveUserNamespace().name
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     fun findUserNamespace(): BaseNamespace {
         return resolveUserNamespace().toBaseDomain()
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     fun resolveUserNamespace(): Namespace {
         val user = authenticationFacade.user ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorised")
         val userId = UUID.fromString(user.id)

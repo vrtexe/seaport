@@ -48,6 +48,14 @@ class DeliveryService(
         }
     }
 
+    fun startDeployment(data: PartialDeployment) {
+        applicationDeploymentService.startDeployment(data.deployment.name, data.namespace)
+    }
+
+    fun stopDeployment(data: PartialDeployment) {
+        applicationDeploymentService.stopDeployment(data.deployment.name, data.namespace)
+    }
+
     fun updateDeployment(data: ResourceChanges) {
         updateIngress(data)
         updateService(data)

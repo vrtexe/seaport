@@ -1,7 +1,12 @@
 <script lang="ts" context="module">
+  export type DialogType = (typeof DialogType)[keyof typeof DialogType];
+  export const DialogType = Object.freeze({
+    Create: 'CREATE',
+    Edit: 'EDIT'
+  } as const);
+
   type DeploymentData = {
     group?: Group;
-    // image?: Image | undefined;
     imageTag?: ImageTag | undefined;
     deployment: {
       name: string;
@@ -78,12 +83,14 @@
   import EnvironmentDialog from '$lib/components/pages/dashboard/deployment/EnvironmentDialog.svelte';
   import Environment from '$lib/components/pages/dashboard/deployment/Environment.svelte';
   import type { NativeEvent } from '$lib/types/svelte';
-  import { createDeployment } from '$lib/service/deploymentService';
+  import { createDeployment, updateDeployment } from '$lib/service/deploymentService';
   import Notification, { NotificationType } from '$lib/components/pages/dashboard/deployment/Notification.svelte';
   import { ClientError } from '$lib/errors/ClientError';
   import { getUserNamespace } from '$lib/service/namespaceService';
 
-  let data: DeploymentData = {
+  export let type: DialogType = DialogType.Create;
+  export let id: number | undefined = undefined;
+  export let data: DeploymentData = {
     deployment: {
       name: '',
       port: 8080
@@ -150,12 +157,10 @@
 
   const handleSave = async () => {
     try {
-      const request = mapRequest(data);
-      await createDeployment(request);
+      save();
       history.back();
     } catch (e) {
       console.error(e);
-
       if (e instanceof Error) {
         notification?.open({
           type: NotificationType.Error,
@@ -170,6 +175,26 @@
     }
   };
 
+  const save = async () => {
+    const request = mapRequest(data);
+
+    switch (type) {
+      case DialogType.Create:
+        return await create(request);
+      case DialogType.Edit:
+        return await update(request);
+    }
+  };
+
+  const update = async (request: DeploymentCreateRequest) => {
+    if (!id) return;
+    return await updateDeployment(id, request);
+  };
+
+  const create = async (request: DeploymentCreateRequest) => {
+    return await createDeployment(request);
+  };
+
   const isInvalid = (data: DeploymentData) => {
     return !data.deployment.name || !data.imageTag;
   };
@@ -179,7 +204,13 @@
 
 <div class="flex h-full flex-col gap-8 px-6 py-4">
   <div class="flex justify-between">
-    <h2 class="text-2xl font-bold">Create Deployment</h2>
+    <h2 class="text-2xl font-bold">
+      {#if type === DialogType.Create}
+        Create Deployment
+      {:else if DialogType.Edit}
+        Edit Deployment
+      {/if}
+    </h2>
     <div class="flex gap-2">
       <SecondaryButton href="/deployment">Cancel</SecondaryButton>
       <PrimaryButton disabled={isInvalid(data)} on:click={handleSave}>Save</PrimaryButton>

@@ -1,29 +1,35 @@
 import { ImageType, type BuildArg } from '$lib/types/baseImage';
 import type { Image } from '$lib/types/baseImageRequest';
-import {BASE_URL} from "$lib/config";
+// import { BASE_URL } from '$lib/config';
+import { BaseImageApi } from '$lib/generated';
+import { configuration } from '$lib/client/config';
 
 // const BASE_URL = 'http://localhost:8081/api/v1'
 // const BASE_URL = 'http://localhost/app/api/v1';
-const BASE_IMAGE_API = 'v1/base-image';
+// const BASE_IMAGE_API = 'v1/base-image';
 
-type ImageArgResponse = {
-  arguments: BuildArg[];
-};
+const baseImageApi = new BaseImageApi(configuration);
+
+// type ImageArgResponse = {
+// arguments: BuildArg[];
+// };
 
 export async function fetchLanguages() {
-  return (await fetch(`${BASE_URL}/${BASE_IMAGE_API}/languages`)
-    .then(t => t.json())
-    .catch(e => catchAndDefault(e, []))) as string[];
+  return await baseImageApi.getBaseImageLanguages().catch(handleErrorWithDefault);
+  // return (await fetch(`${BASE_URL}/${BASE_IMAGE_API}/languages`)
+  //   .then(t => t.json())
+  //   .catch(e => catchAndDefault(e, []))) as string[];
 }
 
 export async function fetchVersions(language: string | undefined) {
   if (!language) {
     return [];
   }
+  return await baseImageApi.getBaseImageLanguageVersions({ name: language }).catch(handleErrorWithDefault);
 
-  return (await fetch(`${BASE_URL}/${BASE_IMAGE_API}/language/${language}/versions`)
-    .then(t => t.json())
-    .catch(e => catchAndDefault(e, []))) as string[];
+  // return (await fetch(`${BASE_URL}/${BASE_IMAGE_API}/language/${language}/versions`)
+  //   .then(t => t.json())
+  //   .catch(e => catchAndDefault(e, []))) as string[];
 }
 
 export async function fetchBuildTools(language: string | undefined, version: string | undefined) {
@@ -31,11 +37,12 @@ export async function fetchBuildTools(language: string | undefined, version: str
     return [];
   }
 
-  const params = new URLSearchParams({ language, version });
+  // const params = new URLSearchParams({ language, version });
+  return await baseImageApi.getBaseImageBuildTools({ language, version }).catch(handleErrorWithDefault);
 
-  return (await fetch(`${BASE_URL}/${BASE_IMAGE_API}/build-tools?${encodeURI(params.toString())}`)
-    .then(t => t.json())
-    .catch(e => catchAndDefault(e, []))) as string[];
+  // return (await fetch(`${BASE_URL}/${BASE_IMAGE_API}/build-tools?${encodeURI(params.toString())}`)
+  // .then(t => t.json())
+  // .catch(e => catchAndDefault(e, []))) as string[];
 }
 
 export async function fetchBuildToolVersions(buildTool: string | undefined) {
@@ -43,9 +50,11 @@ export async function fetchBuildToolVersions(buildTool: string | undefined) {
     return [];
   }
 
-  return (await fetch(`${BASE_URL}/${BASE_IMAGE_API}/build-tool/${buildTool}/versions`)
-    .then(t => t.json())
-    .catch(e => catchAndDefault(e, []))) as string[];
+  return await baseImageApi.getBaseImageBuildToolVersions({ name: buildTool }).catch(handleErrorWithDefault);
+
+  // return (await fetch(`${BASE_URL}/${BASE_IMAGE_API}/build-tool/${buildTool}/versions`)
+  // .then(t => t.json())
+  // .catch(e => catchAndDefault(e, []))) as string[];
 }
 
 export async function fetchImageArgs(
@@ -59,21 +68,42 @@ export async function fetchImageArgs(
     return [];
   }
 
-  const params = new URLSearchParams({
-    type,
-    language: language,
-    languageVersion: languageVersion,
-    'buildTool.name': buildTool ?? '',
-    'buildTool.version': buildToolVersion ?? ''
-  });
+  // const params = new URLSearchParams({
+  //   type,
+  //   language: language,
+  //   languageVersion: languageVersion,
+  //   'buildTool.name': buildTool ?? '',
+  //   'buildTool.version': buildToolVersion ?? ''
+  // });
 
-  return await fetch(`${BASE_URL}/${BASE_IMAGE_API}/build-arguments?${params}`)
-    .then(t => t.json())
-    .then((r: ImageArgResponse) => r.arguments)
-    .catch(e => {
-      console.error(e);
-      return [];
-    });
+  return await baseImageApi
+    .getBaseImageBuildArguments({
+      type,
+      language,
+      languageVersion,
+      buildToolName: buildTool,
+      buildToolVersion: buildToolVersion
+    })
+    .then(r =>
+      r.map(
+        a =>
+          <BuildArg>{
+            description: a.description,
+            name: a.name,
+            stage: a.stage,
+            type: a.type
+          }
+      )
+    )
+    .catch(handleErrorWithDefault);
+
+  // return await fetch(`${BASE_URL}/${BASE_IMAGE_API}/build-arguments?${params}`)
+  //   .then(t => t.json())
+  //   .then((r: ImageArgResponse) => r.arguments)
+  //   .catch(e => {
+  //     console.error(e);
+  //     return [];
+  //   });
 }
 
 export async function fetchImageArgsFromDto(image: Image) {
@@ -89,4 +119,8 @@ export async function fetchImageArgsFromDto(image: Image) {
 function catchAndDefault<T>(e: unknown, defaultValue: T): T {
   console.error(e);
   return defaultValue;
+}
+
+function handleErrorWithDefault<T extends []>(e: unknown): T {
+  return catchAndDefault<T>(e, [] as T);
 }

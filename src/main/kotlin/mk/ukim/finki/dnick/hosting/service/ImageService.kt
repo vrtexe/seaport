@@ -56,7 +56,7 @@ class ImageService(
         return imageLogRepository.findByImageId(imageId)
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     fun getImages(pageable: Pageable): Page<Image> {
         val namespace = namespaceService.resolveUserNamespace()
         return imageRepository.findAllByNamespace(namespace.name, pageable)

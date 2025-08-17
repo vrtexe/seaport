@@ -8,7 +8,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("org.hibernate.orm") version "6.5.2.Final"
     id("org.openapi.generator") version "7.11.0"
-
+    id("org.kordamp.gradle.jdeps") version "0.20.0"
 //    id("org.graalvm.buildtools.native") version "0.10.2"
     kotlin("jvm") version "2.0.10"
     kotlin("plugin.spring") version "2.0.10"
@@ -82,6 +82,24 @@ hibernate {
     }
 }
 
+springBoot {
+    buildInfo {
+        properties {
+            time = null
+        }
+    }
+}
+
+val generateBuildProperties by tasks.creating {
+    val output = file("$buildDir/resources/main/build.properties")
+    doLast {
+        output.writeText("build.version=${project.version}")
+    }
+}
+tasks.processResources {
+    dependsOn(generateBuildProperties)
+}
+
 tasks.register<GenerateTask>("generateApi") {
     generatorName.set("kotlin-spring")
     inputSpec.set("$rootDir/src/main/resources/api.yaml")
@@ -106,9 +124,13 @@ tasks.register<GenerateTask>("generateApi") {
     }
 
     schemaMappings.apply {
-        put("Pageable","org.springframework.data.domain.Pageable")
+        put("Pageable", "org.springframework.data.domain.Pageable")
         put("Sort", "org.springframework.data.domain.Sort")
     }
 
     configOptions.put("dateLibrary", "java8")
+}
+
+tasks.named("compileKotlin") {
+    dependsOn(tasks.named("generateApi"))
 }

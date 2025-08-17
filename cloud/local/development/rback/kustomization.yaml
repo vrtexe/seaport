@@ -1,3 +1,4 @@
 resources:
+  - seaport
   - role-binding.yaml
   - serviceaccount.yaml

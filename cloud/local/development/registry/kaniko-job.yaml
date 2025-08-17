@@ -28,6 +28,7 @@ spec:
           args:
             - "--dockerfile=/workdir/ContainerFile"
             - "--destination=10.96.101.236/test:v1"
+            - "--ignore-path=/product_uuid"
             - "--insecure"
           volumeMounts:
             - name: workdir

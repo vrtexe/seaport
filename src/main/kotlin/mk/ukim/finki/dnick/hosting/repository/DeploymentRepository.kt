@@ -25,10 +25,34 @@ interface DeploymentRepository : JpaRepository<Deployment, Int> {
         left join fetch sp.ingressRules ir
         left join fetch ir.ingress
         left join fetch p.environment
-        where n.name = :namespace
+        where n.name = :namespace and
+            :group is null or a.name = :group
         """
     )
-    fun findAllByNamespace(@Param("namespace") namespace: String, pageable: Pageable): Page<Deployment>
+    fun findAllByNamespace(
+        @Param("group") group: String?,
+        @Param("namespace") namespace: String,
+        pageable: Pageable
+    ): Page<Deployment>
+
+    @Query(
+        """
+        select d from Deployment d
+        left join fetch d.application a
+        left join fetch a.namespace n
+        left join fetch d.pods p
+        left join fetch p.activeImage it
+        left join fetch it.image
+        left join fetch p.servicePorts sp
+        left join fetch sp.service s
+        left join fetch sp.ingressRules ir
+        left join fetch ir.ingress
+        left join fetch p.environment
+        where d.id = :id and n.name = :namespace
+        """
+    )
+    fun findBy(@Param("id") id: Int, @Param("namespace") namespace: String): Deployment?
+
 
     fun findByName(name: String): Deployment?
     fun findByUid(uid: UUID): Deployment?

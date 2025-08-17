@@ -17,7 +17,7 @@ class BaseImageExe(
     var value: String,
 
     @Column(name = "file_type", nullable = false)
-    val fileType: String,
+    var fileType: String,
 
     @JsonManagedReference
     @OnDelete(action = OnDeleteAction.CASCADE)

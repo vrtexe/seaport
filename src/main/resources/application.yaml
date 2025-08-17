@@ -1,3 +1,7 @@
+application:
+  name: Seaport
+  version: ${build.version}
+
 server:
   port: 8080
 spring:
@@ -58,6 +62,3 @@ app-host:
   webdav:
     base-url: http://webdav-service/dav
     k8s-url: http://webdav-service/dav
-
-logging.level.org.hibernate.SQL: DEBUG
-logging.level.org.hibernate.orm.jdbc.bind: TRACE

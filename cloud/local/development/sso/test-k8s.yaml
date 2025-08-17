@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-k8s
+  namespace: sso
+spec:
+  containers:
+    - name: test-image-k8s
+      image: bitnami/kubectl:1.33.2
+      command: [ "sh", "-c" ]
+      args: [ 'sleep infinity' ]
+  restartPolicy: Never

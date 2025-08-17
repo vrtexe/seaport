@@ -13,3 +13,5 @@ databaseChangeLog:
       file: 'db/migrations/1.5_Add_deployment_uid.sql'
   - include:
       file: 'db/migrations/1.6_Add_user_tables.sql'
+  - include:
+      file: 'db/migrations/1.7_Add_base_image_type_casts.sql'

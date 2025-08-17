@@ -24,7 +24,6 @@ class BaseImageGit(
     var value: String,
 
     @JsonBackReference
-//    @JsonManagedReference
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "base_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

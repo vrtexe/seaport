@@ -67,10 +67,10 @@
     <div class="flex min-w-[60rem] max-w-[90rem] flex-col-reverse">
       {#if lines.length}
         {#each lines as line, i}
-          <div class="flex gap-x-2">
+          <div class="flex gap-x-6 font-mono">
             <span class="flex w-4 select-none items-center text-sm font-bold opacity-25">{lines.length - i}</span>
             <span>
-              <AnsiTexts values={parseAnsi(line)} />
+              <pre><AnsiTexts values={parseAnsi(line)} /></pre>
             </span>
           </div>
         {/each}

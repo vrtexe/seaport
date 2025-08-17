@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: database-service
+  namespace: seaport
+spec:
+  type: ExternalName
+  externalName: postgres-service.database.svc.cluster.local

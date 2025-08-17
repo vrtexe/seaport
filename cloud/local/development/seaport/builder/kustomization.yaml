@@ -1,0 +1,3 @@
+resources:
+  - build.yaml
+  - build-pvc.yaml

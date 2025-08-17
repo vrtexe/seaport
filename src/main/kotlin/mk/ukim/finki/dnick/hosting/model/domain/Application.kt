@@ -55,7 +55,7 @@ data class PartialDeployment(
     val ingress: Ingress?,
 )
 
-enum class DeploymentState(private val value: String) {
+enum class DeploymentState(val value: String) {
     INITIAL("INITIAL"),
     STARTED("STARTED"),
     STOPPED("STOPPED"),
