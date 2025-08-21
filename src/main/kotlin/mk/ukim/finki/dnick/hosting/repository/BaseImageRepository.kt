@@ -35,28 +35,27 @@ interface BaseImageRepository : JpaRepository<BaseImage, Int> {
         value = """
             select b
             from BaseImage b
-            where b.language = :language and
-                 (b.version = null or b.version = :version)
+            where (:language is null or b.language = :language) and
+                 (:version is null or b.version is null or b.version = :version)
         """
     )
     fun findBy(
-        @Param("language") language: String,
+        @Param("language") language: String?,
         @Param("version") version: String?
-    ): BaseImage?
+    ): List<BaseImage>
 
     @Query(
         """
         select b from BaseImage b
-        join fetch b.baseImagesGit bg
-        join fetch b.baseImagesExe be
-        join fetch be.ref
-        join fetch bg.ref
+        left join fetch b.baseImagesGit bg
+        left join fetch b.baseImagesExe be
+        left join fetch be.ref
+        left join fetch bg.ref
         where (:language is null or b.language ilike %:language%) and 
               (:buildTool is null or bg.buildTool ilike %:buildTool%)
               """
     )
     fun findAllBy(
-
         @Param("language") language: String?,
         @Param("buildTool") buildTool: String?,
         pageable: Pageable

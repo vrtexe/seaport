@@ -23,5 +23,5 @@ spec:
             - containerPort: 8080
           env:
             - name: JAR_ARGS
-              value: "-D#spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://internal-ingress-service/sso/realms/main/protocol/openid-connect/certs"
+              value: "-Dspring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://internal-ingress-service/sso/realms/main/protocol/openid-connect/certs"
 #          JAR_ARGS

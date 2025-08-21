@@ -155,12 +155,12 @@ paths:
       parameters:
         - in: query
           name: language
-          required: true
+          required: false
           schema:
             type: string
         - in: query
           name: version
-          required: true
+          required: false
           schema:
             type: string
       responses:
@@ -988,6 +988,12 @@ components:
           type: string
         version:
           type: string
+        exe:
+          type: object
+          required: [ fileType ]
+          properties:
+            fileType:
+              type: string
         git:
           type: object
           required: [ buildTool, buildToolVersion ]
@@ -1002,8 +1008,10 @@ components:
             $ref: '#/components/schemas/BaseImageArgument'
     BaseImageDetails:
       type: object
-      required: [ base, value ]
+      required: [ base, value, baseImageId ]
       properties:
+        baseImageId:
+          type: integer
         base:
           $ref: '#/components/schemas/BaseImage'
         value:

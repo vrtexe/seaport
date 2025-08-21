@@ -1,7 +1,7 @@
 import { ImageType, type BuildArg } from '$lib/types/baseImage';
 import type { Image } from '$lib/types/baseImageRequest';
 // import { BASE_URL } from '$lib/config';
-import { BaseImageApi } from '$lib/generated';
+import { BaseImageApi, type BaseImageRequest, type BaseImageType, type Pageable } from '$lib/generated';
 import { configuration } from '$lib/client/config';
 
 // const BASE_URL = 'http://localhost:8081/api/v1'
@@ -13,6 +13,35 @@ const baseImageApi = new BaseImageApi(configuration);
 // type ImageArgResponse = {
 // arguments: BuildArg[];
 // };
+
+export type BaseImageFilter = {
+  buildTool?: string | undefined;
+  language?: string | undefined;
+  type?: BaseImageType | undefined;
+};
+
+export async function getBaseImage(id: number) {
+  return await baseImageApi.getBaseImage({ id });
+}
+
+export async function getBaseImages(filter?: BaseImageFilter, pageable?: Pageable) {
+  return await baseImageApi.getBaseImages({
+    ...(filter ?? {}),
+    ...(pageable ?? {})
+  });
+}
+
+export async function createBaseImage(update: BaseImageRequest) {
+  return await baseImageApi.createBaseImages({ baseImageRequest: update });
+}
+
+export async function updateBaseImage(id: number, update: BaseImageRequest) {
+  return await baseImageApi.updateBaseImages({ id, baseImageRequest: update });
+}
+
+export async function deleteBaseImage(id: number) {
+  return await baseImageApi.deleteBaseImages({ id });
+}
 
 export async function fetchLanguages() {
   return await baseImageApi.getBaseImageLanguages().catch(handleErrorWithDefault);
@@ -33,9 +62,6 @@ export async function fetchVersions(language: string | undefined) {
 }
 
 export async function fetchBuildTools(language: string | undefined, version: string | undefined) {
-  if (!language || !version) {
-    return [];
-  }
 
   // const params = new URLSearchParams({ language, version });
   return await baseImageApi.getBaseImageBuildTools({ language, version }).catch(handleErrorWithDefault);

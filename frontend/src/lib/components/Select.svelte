@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  export type SelectOption<T> = { value: T; name: string };
+  export type SelectOption<T> = { value: T; name: string; custom?: boolean };
 </script>
 
 <script lang="ts">
@@ -14,14 +14,31 @@
 
   export let value: T | undefined;
   export let options: SelectOption<T>[];
+  export let disabled = false;
+
+  export let createValue: ((value: string) => T) | undefined = undefined;
 
   const handleChange = (e: CustomEvent<SelectOption<T>>) => {
+    if (!e.detail.custom) {
+      options = options.filter(v => !v.custom);
+    }
     value = e.detail.value;
   };
 
   const handleClear = () => {
     value = undefined;
+    options = options.filter(v => !v.custom);
   };
+
+  let filterText = '';
+  function handleFilter(e: CustomEvent<string>) {
+    if (!createValue) return;
+
+    if (e.detail.length === 0 && filterText.length > 0) {
+      const prev = options.filter(v => !v.custom);
+      options = [...prev, { value: createValue(filterText), name: filterText, custom: true }];
+    }
+  }
 
   $: internalValue = options.find(d => d.value === value);
 </script>
@@ -35,8 +52,10 @@
     items={options}
     {id}
     {name}
+    bind:filterText
     on:change={handleChange}
     on:clear={handleClear}
+    on:filter={handleFilter}
     --border-radius="0.25rem"
     --max-height="38px"
     --border="1px solid rgb(229 231 235 / var(--tw-border-opacity))"
@@ -46,6 +65,7 @@
     --clear-select-width="2rem"
     --chevron-width="2rem"
     --clear-select-focus-outline="1px solid var(--primary-color)"
+    {disabled}
     showChevron
     itemFilter={(l, i, o) => o.name.includes(i)}
     class="min-w-56 rounded border border-gray-200 bg-white px-4 py-2 shadow outline-primary marker:ml-4 marker:border-r-8"

@@ -2,7 +2,8 @@
   import ModalDialog from '$lib/components/dialogs/ModalDialog.svelte';
   import Close from 'svelte-material-icons/Close.svelte';
 
-  export let height = ""
+  export let height = '';
+  export let contentClass: string = 'px-4 py-2';
 
   let dialog: HTMLDialogElement;
 
@@ -16,7 +17,7 @@
 </script>
 
 <ModalDialog {height} bind:dialog>
-  <div class="grid grid-rows-[auto_1fr_auto] h-full">
+  <div class="grid h-full grid-rows-[auto_1fr_auto]">
     <div class="flex select-none justify-between border-b bg-primary px-3 py-2 text-white shadow-sm">
       <span class="text-lg font-semibold">
         <slot name="title" />
@@ -27,7 +28,7 @@
         </button>
       </span>
     </div>
-    <div class="overflow-auto px-4 py-2">
+    <div class="overflow-auto {contentClass}">
       <slot name="content" />
     </div>
     <div class="flex justify-end gap-2 border-t px-3 py-2">
