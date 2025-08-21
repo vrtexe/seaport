@@ -34,6 +34,7 @@ class BaseImageController(private val baseImageService: BaseImageService) {
                                         type = BaseImageType.EXE,
                                         language = b.language,
                                         version = b.version,
+                                        exe = BaseImageRequestExe(fileType = be.fileType),
                                         arguments = be.ref.arguments.map { a ->
                                             BaseImageArgument(
                                                 name = a.name,
@@ -56,6 +57,10 @@ class BaseImageController(private val baseImageService: BaseImageService) {
                                             type = BaseImageType.GIT,
                                             language = b.language,
                                             version = b.version,
+                                            git = BaseImageRequestGit(
+                                                buildTool = bg.buildTool,
+                                                buildToolVersion = bg.version
+                                            ),
                                             arguments = bg.ref.arguments.map { a ->
                                                 BaseImageArgument(
                                                     name = a.name,
@@ -77,6 +82,41 @@ class BaseImageController(private val baseImageService: BaseImageService) {
     @PostMapping
     fun createBaseImage(@RequestBody body: BaseImageRequestDto) {
         baseImageService.createBaseImage(body)
+    }
+
+    @GetMapping("/{id}")
+    fun getBaseImage(@PathVariable id: Int): ResponseEntity<BaseImageDetails> {
+        return ResponseEntity.ok(
+            baseImageService.findBaseImagesById(id)?.let {
+                BaseImageDetails(
+                    baseImageId = it.baseImage.id!!,
+                    base = BaseImage(
+                        id = it.id!!,
+                        type = BaseImageType.forValue(it.type.name.uppercase()),
+                        language = it.baseImage.language,
+                        version = it.baseImage.version,
+                        arguments = it.arguments.map { a ->
+                            BaseImageArgument(
+                                name = a.name,
+                                description = a.description,
+                                type = BaseArgumentType.forValue(a.type.name.uppercase()),
+                                stage = BaseArgumentStage.forValue(a.stage.name.uppercase())
+                            )
+                        },
+                        exe = it.baseImageExe?.let { e ->
+                            BaseImageRequestExe(fileType = e.fileType)
+                        },
+                        git = it.baseImageGit?.let { g ->
+                            BaseImageRequestGit(
+                                buildTool = g.buildTool,
+                                buildToolVersion = g.version
+                            )
+                        }
+                    ),
+                    value = it.value
+                )
+            }
+        )
     }
 
     @PutMapping("/{id}")
@@ -101,8 +141,8 @@ class BaseImageController(private val baseImageService: BaseImageService) {
 
     @GetMapping("/build-tools")
     fun getBuildTools(
-        @RequestParam("language") language: String,
-        @RequestParam("version") version: String
+        @RequestParam("language", required = false) language: String?,
+        @RequestParam("version", required = false) version: String?
     ): ResponseEntity<List<String>> {
         return ResponseEntity.ok(baseImageService.findImageBuildTools(language, version))
     }

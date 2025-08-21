@@ -38,6 +38,11 @@ class BaseImageService(
         )
     }
 
+    @Transactional(readOnly = true)
+    fun findBaseImagesById(id: Int): BaseImageRef? {
+        return baseImageRefRepository.findByIdOrNull(id)
+    }
+
     @Transactional
     fun createBaseImage(data: BaseImageRequestDto) {
         val baseImage = findOrCreateBaseImage(data)
@@ -121,12 +126,13 @@ class BaseImageService(
     private fun findOrCreateBaseImage(data: BaseImageRequestDto): BaseImage {
         return data.baseImageId?.let { baseImageRepository.findByIdOrNull(it) }
             ?: data.baseImage?.let {
-                baseImageRepository.save(
-                    BaseImage(
-                        language = it.language,
-                        version = it.version
+                baseImageRepository.findBy(it.language, it.version).firstOrNull()
+                    ?: baseImageRepository.save(
+                        BaseImage(
+                            language = it.language,
+                            version = it.version
+                        )
                     )
-                )
             } ?: throw throw ResponseStatusException(HttpStatus.BAD_REQUEST)
     }
 
@@ -220,10 +226,10 @@ class BaseImageService(
     }
 
     @Transactional(readOnly = true)
-    fun findImageBuildTools(language: String, version: String): List<String> {
-        return baseImageRepository.findBy(language, version)?.toDomain()
-            ?.let { baseImageGitRepository.findAllBuildTools(it.id) }
-            ?: listOf()
+    fun findImageBuildTools(language: String?, version: String?): List<String> {
+        return baseImageRepository.findBy(language, version).map { it.toDomain() }
+            .flatMap { baseImageGitRepository.findAllBuildTools(it.id) }
+            .distinct()
     }
 
     @Transactional(readOnly = true)

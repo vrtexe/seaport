@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: ServiceRegistry
+  profiles:
+    active: cluster
+
+
+server:
+  port: 8080
+
+app-host:
+  k8s:
+    config:
+      format: CLASSPATH
+      data: kubeconfig.yaml
+      url: http://localhost
+

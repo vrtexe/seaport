@@ -28,6 +28,18 @@ class BaseImageRef(
             else if (this.baseImageExe != null) BaseImageType.EXE
             else throw UnsupportedOperationException()
 
+    val baseImage: BaseImage
+        get() =
+            if (this.baseImageGit != null) this.baseImageGit!!.base
+            else if (this.baseImageExe != null) this.baseImageExe!!.base
+            else throw UnsupportedOperationException()
+
+    val value: String
+        get() =
+            if (this.baseImageGit != null) this.baseImageGit!!.value
+            else if (this.baseImageExe != null) this.baseImageExe!!.value
+            else throw UnsupportedOperationException()
+
 
     override fun extractId() = id
 }
