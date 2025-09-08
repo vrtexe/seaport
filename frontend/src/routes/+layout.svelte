@@ -25,6 +25,7 @@
   import { onMount } from 'svelte';
   import { initKeycloak, login, logout, register, user } from '$lib/service/keycloakService';
   import { isAdmin } from '$lib/model/user';
+  import PrimaryButton from '$lib/components/buttons/PrimaryButton.svelte';
 
   let header: HTMLElement | undefined;
   let headerHeight: number | undefined;
@@ -81,10 +82,10 @@
 
   <div class="flex h-full flex-1 justify-end gap-4 px-8">
     {#if !$user}
-      <button class="primary" type="button" on:click={login}>Login</button>
-      <button class="primary" type="button" on:click={register}>Register</button>
+      <PrimaryButton on:click={login}>Login</PrimaryButton>
+      <PrimaryButton on:click={register}>Register</PrimaryButton>
     {:else}
-      <button class="primary" type="button" on:click={logout}>Logout</button>
+      <PrimaryButton on:click={logout}>Logout</PrimaryButton>
     {/if}
   </div>
 </header>

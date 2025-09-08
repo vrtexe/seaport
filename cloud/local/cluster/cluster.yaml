@@ -17,13 +17,13 @@ nodes:
         hostPort: 443
         protocol: TCP
     extraMounts:
-      - hostPath: /Users/vatrajko/Projects/school/hosting
+      - hostPath: /Users/vatrajko/Projects/school/seaport
         containerPath: /var/data/source
-      - hostPath: /Users/vatrajko/Projects/school/hosting/cloud/local/data/database
+      - hostPath: /Users/vatrajko/Projects/school/seaport/cloud/local/data/database
         containerPath: /var/data/database
-      - hostPath: /Users/vatrajko/Projects/school/hosting/cloud/local/data/internal-registry
+      - hostPath: /Users/vatrajko/Projects/school/seaport/cloud/local/data/internal-registry
         containerPath: /var/data/registry
-      - hostPath: /Users/vatrajko/Projects/school/hosting/cloud/local/data/webdav
+      - hostPath: /Users/vatrajko/Projects/school/seaport/cloud/local/data/webdav
         containerPath: /var/data/webdav
 
 containerdConfigPatches:
