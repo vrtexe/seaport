@@ -62,7 +62,6 @@ export async function fetchVersions(language: string | undefined) {
 }
 
 export async function fetchBuildTools(language: string | undefined, version: string | undefined) {
-
   // const params = new URLSearchParams({ language, version });
   return await baseImageApi.getBaseImageBuildTools({ language, version }).catch(handleErrorWithDefault);
 
@@ -94,14 +93,6 @@ export async function fetchImageArgs(
     return [];
   }
 
-  // const params = new URLSearchParams({
-  //   type,
-  //   language: language,
-  //   languageVersion: languageVersion,
-  //   'buildTool.name': buildTool ?? '',
-  //   'buildTool.version': buildToolVersion ?? ''
-  // });
-
   return await baseImageApi
     .getBaseImageBuildArguments({
       type,
@@ -110,6 +101,7 @@ export async function fetchImageArgs(
       buildToolName: buildTool,
       buildToolVersion: buildToolVersion
     })
+    .then(r => r.arguments ?? [])
     .then(r =>
       r.map(
         a =>

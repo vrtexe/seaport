@@ -1,0 +1,22 @@
+{
+  "value": "testing1",
+  "type": "GIT",
+  "git": {
+    "buildTool": "sth",
+    "buildToolVersion": "1.0.0"
+  },
+  "arguments": [
+    {
+      "name": "FILE",
+      "description": "test",
+      "type": "FILE",
+      "stage": "BUILD"
+    },
+     {
+      "name": "PARAM",
+      "description": "test-param",
+      "type": "STRING",
+      "stage": "BUILD"
+    }
+  ]
+}

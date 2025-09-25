@@ -54,6 +54,7 @@
     imageArgs = await fetchImageArgs(type, language, languageVersion, buildTool, buildToolVersion).then(response =>
       response.map(initializeArgs)
     );
+    console.log('here',imageArgs)
   }
 
   function initializeArgs(base: BuildArg): BuildArg {

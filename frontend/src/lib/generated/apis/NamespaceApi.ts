@@ -35,8 +35,11 @@ export class NamespaceApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+
+        let urlPath = `/v2/namespace/user`;
+
         const response = await this.request({
-            path: `/v2/namespace/user`,
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,

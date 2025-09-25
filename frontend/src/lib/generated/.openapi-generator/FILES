@@ -1,3 +1,4 @@
+.openapi-generator-ignore
 apis/BaseImageApi.ts
 apis/DefaultApi.ts
 apis/DeploymentApi.ts
@@ -10,6 +11,7 @@ models/BaseArgumentStage.ts
 models/BaseArgumentType.ts
 models/BaseImage.ts
 models/BaseImageArgument.ts
+models/BaseImageArgumentResponse.ts
 models/BaseImageDetails.ts
 models/BaseImageRequest.ts
 models/BaseImageRequestBaseImage.ts

@@ -15,15 +15,15 @@
 
 import * as runtime from '../runtime';
 import type {
-  BaseImageArgument,
+  BaseImageArgumentResponse,
   BaseImageDetails,
   BaseImageRequest,
   BaseImageResponse,
   BaseImageType,
 } from '../models/index';
 import {
-    BaseImageArgumentFromJSON,
-    BaseImageArgumentToJSON,
+    BaseImageArgumentResponseFromJSON,
+    BaseImageArgumentResponseToJSON,
     BaseImageDetailsFromJSON,
     BaseImageDetailsToJSON,
     BaseImageRequestFromJSON,
@@ -95,8 +95,11 @@ export class BaseImageApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
+
+        let urlPath = `/v2/base-image`;
+
         const response = await this.request({
-            path: `/v2/base-image`,
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -126,8 +129,12 @@ export class BaseImageApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+
+        let urlPath = `/v2/base-image/{id}`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/v2/base-image/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            path: urlPath,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -156,8 +163,12 @@ export class BaseImageApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+
+        let urlPath = `/v2/base-image/{id}`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/v2/base-image/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -175,7 +186,7 @@ export class BaseImageApi extends runtime.BaseAPI {
 
     /**
      */
-    async getBaseImageBuildArgumentsRaw(requestParameters: GetBaseImageBuildArgumentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<BaseImageArgument>>> {
+    async getBaseImageBuildArgumentsRaw(requestParameters: GetBaseImageBuildArgumentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BaseImageArgumentResponse>> {
         if (requestParameters['type'] == null) {
             throw new runtime.RequiredError(
                 'type',
@@ -221,19 +232,22 @@ export class BaseImageApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+
+        let urlPath = `/v2/base-image/build-arguments`;
+
         const response = await this.request({
-            path: `/v2/base-image/build-arguments`,
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(BaseImageArgumentFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => BaseImageArgumentResponseFromJSON(jsonValue));
     }
 
     /**
      */
-    async getBaseImageBuildArguments(requestParameters: GetBaseImageBuildArgumentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<BaseImageArgument>> {
+    async getBaseImageBuildArguments(requestParameters: GetBaseImageBuildArgumentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BaseImageArgumentResponse> {
         const response = await this.getBaseImageBuildArgumentsRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -252,8 +266,12 @@ export class BaseImageApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+
+        let urlPath = `/v2/base-image/build-tool/{name}/versions`;
+        urlPath = urlPath.replace(`{${"name"}}`, encodeURIComponent(String(requestParameters['name'])));
+
         const response = await this.request({
-            path: `/v2/base-image/build-tool/{name}/versions`.replace(`{${"name"}}`, encodeURIComponent(String(requestParameters['name']))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -284,8 +302,11 @@ export class BaseImageApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+
+        let urlPath = `/v2/base-image/build-tools`;
+
         const response = await this.request({
-            path: `/v2/base-image/build-tools`,
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -315,8 +336,12 @@ export class BaseImageApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+
+        let urlPath = `/v2/base-image/language/{name}/versions`;
+        urlPath = urlPath.replace(`{${"name"}}`, encodeURIComponent(String(requestParameters['name'])));
+
         const response = await this.request({
-            path: `/v2/base-image/language/{name}/versions`.replace(`{${"name"}}`, encodeURIComponent(String(requestParameters['name']))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -339,8 +364,11 @@ export class BaseImageApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+
+        let urlPath = `/v2/base-image/languages`;
+
         const response = await this.request({
-            path: `/v2/base-image/languages`,
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -387,8 +415,11 @@ export class BaseImageApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+
+        let urlPath = `/v2/base-image`;
+
         const response = await this.request({
-            path: `/v2/base-image`,
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -420,8 +451,12 @@ export class BaseImageApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
+
+        let urlPath = `/v2/base-image/{id}`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/v2/base-image/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            path: urlPath,
             method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,

@@ -44,14 +44,14 @@ RUN git clone $URL src
 FROM maven:3.9.8-eclipse-temurin-21-alpine as builder
 
 ARG JAR_PATH
-ARG BASE_DIRECTORY="."
+ARG BUILD_DIRECTORY="."
 ARG BUILD_ARGS=""
 
 WORKDIR /data
 
 COPY --from=src /data/src src
 
-WORKDIR /data/src/$BASE_DIRECTORY
+WORKDIR /data/src/$BUILD_DIRECTORY
 
 RUN mvn $BUILD_ARGS clean install
 RUN mv $JAR_PATH /data/app.jar
@@ -95,14 +95,14 @@ RUN git clone $URL src
 FROM gradle:8.9.0-jdk21-alpine as builder
 
 ARG JAR_PATH
-ARG BASE_DIRECTORY="."
+ARG BUILD_DIRECTORY="."
 ARG BUILD_ARGS=""
 
 WORKDIR /data
 
 COPY --from=src /data/src src
 
-WORKDIR /data/src/$BASE_DIRECTORY
+WORKDIR /data/src/$BUILD_DIRECTORY
 
 RUN gradle $BUILD_ARGS clean build
 RUN mv $JAR_PATH /data/app.jar

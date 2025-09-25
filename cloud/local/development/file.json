@@ -1,0 +1,25 @@
+{
+  "value": "testing1",
+  "type": "EXE",
+  "baseImage": {
+    "language": "nginx",
+    "version": "1.0.0"
+  },
+  "exe": {
+    "fileType": "jar"
+  },
+  "arguments": [
+    {
+      "name": "FILE",
+      "description": "test",
+      "type": "FILE",
+      "stage": "BUILD"
+    },
+     {
+      "name": "PARAM",
+      "description": "test-param",
+      "type": "STRING",
+      "stage": "BUILD"
+    }
+  ]
+}

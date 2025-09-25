@@ -227,9 +227,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BaseImageArgument'
+                $ref: '#/components/schemas/BaseImageArgumentResponse'
 
   /v2/images:
     get:
@@ -623,6 +621,13 @@ components:
         Default sort order is ascending.
         Multiple sort criteria are supported.
   schemas:
+    BaseImageArgumentResponse:
+      type: object
+      properties:
+        arguments:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseImageArgument'
     DeploymentCreateRequest:
       type: object
       required: [ groupId, deployment, service ]

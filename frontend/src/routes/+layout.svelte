@@ -72,11 +72,11 @@
           <span>Explore</span>
         </a>
       </li> -->
-      <!-- <li>
+      <li>
         <a class="inline-block px-2 py-4" href="/docs" class:active={$page.route?.id === '/docs'}>
           <span>Documentation</span>
         </a>
-      </li> -->
+      </li>
     </ul>
   </nav>
 

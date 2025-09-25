@@ -7,17 +7,12 @@
   let monaco: typeof Monaco;
   let editorContainer: HTMLElement;
 
-  // Define props with Svelte 5 syntax
-  // interface Props {
   export let value: string;
   export let language: string | undefined = undefined;
   export let theme: string = 'vs-dark';
+  
   let className: string = '';
-
   export { className as class };
-  // }
-
-  // let { value = $bindable(), language = 'html', theme = 'vs-dark' }: Props = $props();
 
   onMount(() => {
     (async () => {

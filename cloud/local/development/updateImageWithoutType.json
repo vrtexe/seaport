@@ -1,0 +1,21 @@
+{
+  "value": "upd",
+  "type": "EXE",
+  "exe": {
+    "fileType": "test2"
+  }, 
+  "arguments": [
+    {
+      "name": "FILE_2",
+      "description": "test-change",
+      "type": "FILE",
+      "stage": "BUILD"
+    },
+     {
+      "name": "PARAM_CH",
+      "description": "test-param change",
+      "type": "STRING",
+      "stage": "BUILD"
+    }
+  ]
+}

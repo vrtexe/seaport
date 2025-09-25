@@ -4,6 +4,7 @@ export * from './BaseArgumentStage';
 export * from './BaseArgumentType';
 export * from './BaseImage';
 export * from './BaseImageArgument';
+export * from './BaseImageArgumentResponse';
 export * from './BaseImageDetails';
 export * from './BaseImageRequest';
 export * from './BaseImageRequestBaseImage';
