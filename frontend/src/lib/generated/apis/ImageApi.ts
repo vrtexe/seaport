@@ -45,6 +45,10 @@ export interface DeleteImageRequest {
     id: number;
 }
 
+export interface DeleteImageTagRequest {
+    id: number;
+}
+
 export interface EditImageRequest {
     id: number;
     imageUpdateRequest: ImageUpdateRequest;
@@ -138,6 +142,40 @@ export class ImageApi extends runtime.BaseAPI {
      */
     async deleteImage(requestParameters: DeleteImageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.deleteImageRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async deleteImageTagRaw(requestParameters: DeleteImageTagRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling deleteImageTag().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+
+        let urlPath = `/v2/images/tag/{id}`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async deleteImageTag(requestParameters: DeleteImageTagRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.deleteImageTagRaw(requestParameters, initOverrides);
     }
 
     /**

@@ -1,11 +1,14 @@
 package mk.ukim.finki.dnick.hosting.webdav
 
+import com.github.sardine.DavResource
 import com.github.sardine.Sardine
 import com.github.sardine.impl.SardineException
 import io.github.oshai.kotlinlogging.KotlinLogging
+import liquibase.resource.InputStreamList
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
+import java.io.InputStream
 import java.util.*
 
 private val log = KotlinLogging.logger {}
@@ -18,6 +21,38 @@ class WebDavClient(
 
     private val baseUrl get() = webDavProperties.baseUrl
     private val k8sUrl get() = webDavProperties.k8sUrl
+
+
+    fun fetchAll(): Set<DavResource> {
+        val queue = ArrayDeque(sardineClient.list(baseUrl))
+        val passed = queue.map { s -> s.href }.toMutableSet()
+
+        val result = mutableSetOf<DavResource>()
+        while (queue.isNotEmpty()) {
+            val resource = queue.pop()
+
+            if (resource.isDirectory) {
+                sardineClient.list("$baseUrl/${resource.path.removePrefix("/dav")}")
+                    .forEach { if (passed.add(it.href)) queue.push(it) }
+            } else {
+                resource.let { result.add(it) }
+            }
+        }
+
+        return result
+    }
+
+    fun fetch(path: String): DavResource? {
+        return sardineClient.list("$baseUrl/${path}").firstOrNull()
+    }
+
+    fun getContent(path: String): InputStream? {
+        return sardineClient.get("$baseUrl/${path}")
+    }
+
+    fun delete(path: String) {
+        sardineClient.delete("$baseUrl/${path}")
+    }
 
     fun upload(name: String, path: String, file: MultipartFile): String {
         log.info { "Uploading file $name at: $path" }

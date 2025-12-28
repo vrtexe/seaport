@@ -62,7 +62,7 @@
 
 <div class="flex h-full flex-col gap-8 px-6 py-4">
   <div class="flex justify-between">
-    <h2 class="text-2xl font-bold">Deployments</h2>
+    <h2 class="text-2xl font-bold">Base images</h2>
     <PrimaryButton href="/admin/image/create">+ Create base image</PrimaryButton>
   </div>
   <div class="grid grid-cols-3 gap-4">

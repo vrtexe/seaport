@@ -8,7 +8,9 @@ import mk.ukim.finki.dnick.hosting.image.ImageGitParams
 import mk.ukim.finki.dnick.hosting.image.ImageParamsTyped
 
 import mk.ukim.finki.dnick.hosting.model.dto.ImageBuildRequestDto
+import mk.ukim.finki.dnick.hosting.model.dto.ImageFilterCriteria
 import mk.ukim.finki.dnick.hosting.model.entity.*
+import mk.ukim.finki.dnick.hosting.registry.RegistryClient
 import mk.ukim.finki.dnick.hosting.repository.*
 import mk.ukim.finki.dnick.hosting.socket.SocketSessionCache
 import org.springframework.data.domain.Page
@@ -35,6 +37,7 @@ class ImageService(
     private val imageRepository: ImageRepository,
     private val imageLogRepository: ImageLogRepository,
     private val podRepository: PodRepository,
+    private val registryClient: RegistryClient,
 ) {
 
     @Transactional
@@ -54,6 +57,16 @@ class ImageService(
     @Transactional(readOnly = true)
     fun getImageLog(imageId: Int): ImageLog? {
         return imageLogRepository.findByImageId(imageId)
+    }
+
+    @Transactional
+    fun getAllImages(criteria: ImageFilterCriteria?, pageable: Pageable): Page<Image> {
+        return imageRepository.findBy(
+            name = criteria?.app,
+            user = criteria?.user,
+            namespace = criteria?.namespace,
+            pageable = pageable
+        )
     }
 
     @Transactional
@@ -92,7 +105,22 @@ class ImageService(
         if (podRepository.findByActiveImageIdIn(image.tags.map { it.id }.filterNotNull()).isNotEmpty()) {
             throw ResponseStatusException(BAD_REQUEST, "The application is referenced by a deployment.")
         }
+
+        image.tags.forEach { registryClient.deleteManifest(image.name, it.version) }
         imageRepository.delete(image)
+    }
+
+    @Transactional
+    fun deleteImageTag(id: Int) {
+        val tag = imageTagRepository.findByIdOrNull(id)
+            ?: throw ResponseStatusException(NOT_FOUND, "The tag `${id}` does not exist.")
+
+        if (podRepository.findByActiveImageIdIn(listOf(id)).isNotEmpty()) {
+            throw ResponseStatusException(BAD_REQUEST, "The application is referenced by a deployment.")
+        }
+
+        registryClient.deleteManifest(tag.image.name, tag.version)
+        imageTagRepository.delete(tag)
     }
 
     fun buildImage(dto: ImageBuildRequestDto) {

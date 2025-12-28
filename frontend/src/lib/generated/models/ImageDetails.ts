@@ -20,6 +20,13 @@ import {
     ImageTagToJSON,
     ImageTagToJSONTyped,
 } from './ImageTag';
+import type { User } from './User';
+import {
+    UserFromJSON,
+    UserFromJSONTyped,
+    UserToJSON,
+    UserToJSONTyped,
+} from './User';
 import type { ImageTagDetails } from './ImageTagDetails';
 import {
     ImageTagDetailsFromJSON,
@@ -46,6 +53,12 @@ export interface ImageDetails {
      * @memberof ImageDetails
      */
     name: string;
+    /**
+     * 
+     * @type {User}
+     * @memberof ImageDetails
+     */
+    user?: User;
     /**
      * 
      * @type {ImageTag}
@@ -89,6 +102,7 @@ export function ImageDetailsFromJSONTyped(json: any, ignoreDiscriminator: boolea
         
         'id': json['id'],
         'name': json['name'],
+        'user': json['user'] == null ? undefined : UserFromJSON(json['user']),
         'latest': json['latest'] == null ? undefined : ImageTagFromJSON(json['latest']),
         'releases': json['releases'],
         'tags': ((json['tags'] as Array<any>).map(ImageTagDetailsFromJSON)),
@@ -108,6 +122,7 @@ export function ImageDetailsToJSONTyped(value?: ImageDetails | null, ignoreDiscr
         
         'id': value['id'],
         'name': value['name'],
+        'user': UserToJSON(value['user']),
         'latest': ImageTagToJSON(value['latest']),
         'releases': value['releases'],
         'tags': ((value['tags'] as Array<any>).map(ImageTagDetailsToJSON)),

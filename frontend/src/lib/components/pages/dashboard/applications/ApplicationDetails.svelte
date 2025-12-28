@@ -66,7 +66,6 @@
           <th class="text-left">Released</th>
           <th>Type</th>
           <th>Actions</th>
-          <th></th>
         </tr>
       </thead>
       <tbody>

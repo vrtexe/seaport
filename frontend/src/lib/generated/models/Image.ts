@@ -20,6 +20,13 @@ import {
     ImageTagToJSON,
     ImageTagToJSONTyped,
 } from './ImageTag';
+import type { User } from './User';
+import {
+    UserFromJSON,
+    UserFromJSONTyped,
+    UserToJSON,
+    UserToJSONTyped,
+} from './User';
 
 /**
  * 
@@ -39,6 +46,12 @@ export interface Image {
      * @memberof Image
      */
     name: string;
+    /**
+     * 
+     * @type {User}
+     * @memberof Image
+     */
+    user?: User;
     /**
      * 
      * @type {ImageTag}
@@ -75,6 +88,7 @@ export function ImageFromJSONTyped(json: any, ignoreDiscriminator: boolean): Ima
         
         'id': json['id'],
         'name': json['name'],
+        'user': json['user'] == null ? undefined : UserFromJSON(json['user']),
         'latest': json['latest'] == null ? undefined : ImageTagFromJSON(json['latest']),
         'releases': json['releases'],
     };
@@ -93,6 +107,7 @@ export function ImageToJSONTyped(value?: Image | null, ignoreDiscriminator: bool
         
         'id': value['id'],
         'name': value['name'],
+        'user': UserToJSON(value['user']),
         'latest': ImageTagToJSON(value['latest']),
         'releases': value['releases'],
     };

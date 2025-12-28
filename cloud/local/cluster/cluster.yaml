@@ -17,13 +17,13 @@ nodes:
         hostPort: 443
         protocol: TCP
     extraMounts:
-      - hostPath: ../../../
+      - hostPath: ./../../
         containerPath: /var/data/source
-      - hostPath: ../data/database
+      - hostPath: ./data/database
         containerPath: /var/data/database
-      - hostPath: ../data/internal-registry
+      - hostPath: ./data/internal-registry
         containerPath: /var/data/registry
-      - hostPath: ../data/webdav
+      - hostPath: ./data/webdav
         containerPath: /var/data/webdav
 
 containerdConfigPatches:

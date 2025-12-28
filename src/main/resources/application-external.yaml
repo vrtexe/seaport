@@ -12,3 +12,5 @@ app-host:
   webdav:
     base-url: http://localhost/webdav/dav
     k8s-url: http://webdav-service/dav
+  registry:
+    url: http://localhost/registry

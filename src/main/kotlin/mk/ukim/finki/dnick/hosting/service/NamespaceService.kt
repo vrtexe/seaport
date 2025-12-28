@@ -7,6 +7,7 @@ import mk.ukim.finki.dnick.hosting.model.entity.User
 import mk.ukim.finki.dnick.hosting.model.entity.toBaseDomain
 import mk.ukim.finki.dnick.hosting.repository.NamespaceRepository
 import mk.ukim.finki.dnick.hosting.repository.UserRepository
+import org.bouncycastle.asn1.x500.style.RFC4519Style.uid
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -49,7 +50,15 @@ class NamespaceService(
     }
 
     private fun getUser(uid: UUID): User {
+        val user = authenticationFacade.user ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorised")
         return userRepository.findByUid(uid)
-            ?: userRepository.save(User(uid = uid))
+            ?: userRepository.save(
+                User(
+                    uid = uid,
+                    username = user.username,
+                    firstName = user.firstName,
+                    lastName = user.lastName
+                )
+            )
     }
 }

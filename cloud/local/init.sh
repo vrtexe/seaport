@@ -1,8 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 directory=$(dirname "$0")
 
 $directory/cluster/kind-start.sh
+
+$directory/setup.sh
 
 kubectl apply -k $directory/development
 

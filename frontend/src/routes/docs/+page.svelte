@@ -1,7 +1,7 @@
 <script>
-    import DocumentationContent from "$lib/components/pages/documentation/DocumentationContent.svelte";
+  import DocumentationContent from '$lib/components/pages/documentation/DocumentationContent.svelte';
 </script>
 
 <DocumentationContent>
-    <slot/>
+  <slot />
 </DocumentationContent>

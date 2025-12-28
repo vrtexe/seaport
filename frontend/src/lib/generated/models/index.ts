@@ -47,5 +47,8 @@ export * from './Pageable';
 export * from './Pagination';
 export * from './ResponseMetadata';
 export * from './Sort';
+export * from './StorageResponse';
+export * from './StoredResource';
+export * from './User';
 export * from './V2DocumentationGet200Response';
 export * from './V2DocumentationGet200ResponsePagesInner';

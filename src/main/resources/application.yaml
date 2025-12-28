@@ -58,6 +58,8 @@ app-host:
         value: EMPTY
   user:
     namespace: vangel
+  registry:
+    url: http://registry-service
 
   webdav:
     base-url: http://webdav-service/dav

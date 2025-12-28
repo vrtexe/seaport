@@ -329,6 +329,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/ImageLog'
           description: ok
+  /v2/images/tag/{id}:
+    delete:
+      operationId: deleteImageTag
+      tags: [ image ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: No content
+
   /v2/groups:
     get:
       tags: [ group ]
@@ -529,6 +543,153 @@ paths:
           description: No content
         404:
           description: Not found
+
+  /v2/storage:
+    get:
+      operationId: getStoredResources
+      tags: [ storage ]
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - in: query
+          name: name
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StorageResponse"
+  /v2/storage/resource:
+    get:
+      operationId: getStoredResource
+      tags: [ storage ]
+      description: Get stored resources by path, path can be provided either as a query param or as part of the url after the defined prefix
+      parameters:
+        - in: query
+          name: path
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+    delete:
+      operationId: deleteStoredResource
+      tags: [ storage ]
+      description: Delete stored resource by path, path can be provided either as a query param or as part of the url after the defined prefix
+      parameters:
+        - in: query
+          name: path
+          required: false
+          schema:
+            type: string
+      responses:
+        204:
+          description: No content
+
+  /v2/registry/images:
+    get:
+      tags: [ registry ]
+      operationId: getRegistryImages
+      x-spring-paginated: true
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - name: user
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: app
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: namespace
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagesResponse'
+  /v2/registry/images/{id}:
+    get:
+      operationId: getRegistryImage
+      tags: [ registry ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageDetails'
+          description: OK
+    delete:
+      operationId: deleteRegistryImage
+      tags: [ registry ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: No content
+  /v2/registry/images/{id}/log:
+    get:
+      operationId: getRegistryImageLog
+      tags: [ registry ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageLog'
+          description: ok
+  /v2/registry/images/tag/{id}:
+    delete:
+      operationId: deleteRegistryImageTag
+      tags: [ registry ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: No content
+
+
+  #  /v2/registry/
 
   /v2/documentation:
     get:
@@ -859,10 +1020,26 @@ components:
           type: integer
         name:
           type: string
+        user:
+          $ref: '#/components/schemas/User'
         latest:
           $ref: '#/components/schemas/ImageTag'
         releases:
           type: integer
+    User:
+      type: object
+      required: [ uid ]
+      properties:
+        uid:
+          type: string
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        namespace:
+          type: string
     ImageTag:
       type: object
       required: [ id, uid, version, created, status ]
@@ -1089,7 +1266,43 @@ components:
           type: array
           items:
             type: string
-
+    StorageResponse:
+      type: object
+      required: [ data, metadata ]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/StoredResource"
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+    StoredResource:
+      type: object
+      required: [ name, href, directory, contentType, contentLength, path— ]
+      properties:
+        name:
+          type: string
+        displayName:
+          type: string
+        path:
+          type: string
+        href:
+          type: string
+        directory:
+          type: boolean
+        etag:
+          type: string
+        created:
+          type: string
+          format: date-time
+        modified:
+          type: string
+          format: date-time
+        contentType:
+          type: string
+        contentLength:
+          type: integer
+          format: int64
 
 
 

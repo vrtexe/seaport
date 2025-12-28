@@ -7,7 +7,7 @@ plugins {
     id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.hibernate.orm") version "6.5.2.Final"
-    id("org.openapi.generator") version "7.11.0"
+    id("org.openapi.generator") version "7.18.0"
     id("org.kordamp.gradle.jdeps") version "0.20.0"
 //    id("org.graalvm.buildtools.native") version "0.10.2"
     kotlin("jvm") version "2.0.10"
@@ -54,6 +54,7 @@ dependencies {
     implementation("io.swagger.core.v3:swagger-annotations:2.2.28")
     implementation("io.swagger.parser.v3:swagger-parser:2.1.25")
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
 
@@ -130,6 +131,42 @@ tasks.register<GenerateTask>("generateApi") {
 
     configOptions.put("dateLibrary", "java8")
 }
+
+tasks.register<GenerateTask>("generate-registry-api") {
+    generatorName.set("kotlin-spring")
+    inputSpec.set("$rootDir/src/main/resources/registry-api.yaml")
+    outputDir.set("${rootProject.layout.buildDirectory.get()}/generated")
+    apiPackage.set("mk.ukim.finki.dnick.hosting.generated.registry.api")
+    modelPackage.set("mk.ukim.finki.dnick.hosting.generated.registry.model")
+    generateAliasAsModel.set(true)
+    supportingFilesConstrainedTo.set(listOf())
+
+    globalProperties.apply {
+        put("generateSupportingFiles", "false")
+        put("generateApis", "false")
+    }
+    configOptions.apply {
+        put("useSpringBoot3", "true")
+        put("skipDefaultInterface", "true")
+        put("useTags", "true")
+        put("requestMappingMode", "api_interface")
+        put("interfaceOnly", "true")
+        put("exceptionHandler", "false")
+    }
+
+    typeMappings.apply {
+        put("object+pageable", "Pageable")
+        put("object+sort", "Sort")
+    }
+
+    schemaMappings.apply {
+        put("Pageable", "org.springframework.data.domain.Pageable")
+        put("Sort", "org.springframework.data.domain.Sort")
+    }
+
+    configOptions.put("dateLibrary", "java8")
+}
+
 
 tasks.named("compileKotlin") {
     dependsOn(tasks.named("generateApi"))

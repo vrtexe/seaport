@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 directory=$(dirname "$0")
 cluster_name='kind-cluster'

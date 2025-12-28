@@ -1,10 +1,11 @@
-.openapi-generator-ignore
 apis/BaseImageApi.ts
 apis/DefaultApi.ts
 apis/DeploymentApi.ts
 apis/GroupApi.ts
 apis/ImageApi.ts
 apis/NamespaceApi.ts
+apis/RegistryApi.ts
+apis/StorageApi.ts
 apis/index.ts
 index.ts
 models/BaseArgumentStage.ts
@@ -54,6 +55,9 @@ models/Pageable.ts
 models/Pagination.ts
 models/ResponseMetadata.ts
 models/Sort.ts
+models/StorageResponse.ts
+models/StoredResource.ts
+models/User.ts
 models/V2DocumentationGet200Response.ts
 models/V2DocumentationGet200ResponsePagesInner.ts
 models/index.ts
