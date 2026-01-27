@@ -55,7 +55,7 @@ dependencies {
     implementation("io.swagger.parser.v3:swagger-parser:2.1.25")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+//    developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
 
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.4")
